@@ -12,7 +12,8 @@ class SettingPreferences {
       location: '',
       budget: 0.0,
       cart:'',
-      history:''
+      history:'',
+      token: ''
       );
 
   static Future init() async =>

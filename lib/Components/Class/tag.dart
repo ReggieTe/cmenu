@@ -1,5 +1,6 @@
 class Tag {
   final String id;
   final String name;
-  Tag(this.id,this.name);
+  final int count;
+  Tag(this.id, this.name, this.count);
 }

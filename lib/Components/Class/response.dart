@@ -44,22 +44,19 @@ class ResponseModel {
   }
 }
 
-
-
 class RequestDataModel {
   final String id;
   final String keyword;
-  
-  RequestDataModel ({
+  final String token;
+
+  RequestDataModel({
     required this.id,
     required this.keyword,
+    required this.token,
   });
 
   Map<String, dynamic> toJson() {
-    Map<String, dynamic> map = {
-      'id': id.trim(),
-      'keyword': keyword.trim()
-    };
+    Map<String, dynamic> map = {'id': id.trim(), 'keyword': keyword.trim(),'token':token.trim()};
     return map;
   }
 
@@ -69,3 +66,28 @@ class RequestDataModel {
   }
 }
 
+class TrackDataModel {
+  final String token;
+  final String section;
+  final String id;
+
+  TrackDataModel({
+    required this.token,
+    required this.section,
+    required this.id,
+  });
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {
+      'id': id.trim(),
+      'token': token.trim(),
+      'section': section.trim()
+    };
+    return map;
+  }
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
+}

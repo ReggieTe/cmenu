@@ -9,14 +9,14 @@ class ProgressLoader extends StatelessWidget {
   final bool whiteBg;
 
   const ProgressLoader({
-    Key? key,
+    super.key,
     required this.child,
     required this.inAsyncCall,
     this.opacity = 0.3,
     this.color = Colors.grey,
     this.alignment = Alignment.center,
     this.whiteBg = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

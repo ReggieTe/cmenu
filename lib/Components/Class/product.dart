@@ -6,6 +6,8 @@ class Product {
   final String price;
   final String description;
   final String discount;
-  final List<image> images;
-  Product(this.id, this.name, this.price, this.description, this.discount,this.images);
+  final List<Image> images;
+  final String type;
+  Product(this.id, this.name, this.price, this.description, this.discount,
+      this.images,{this.type=''});
 }

@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 
 class EmptyPageContent extends StatelessWidget {
   const EmptyPageContent({
-    Key? key,
+    super.key,
     required this.imageLink,
     required this.label,
-  }) : super(key: key);
+  });
 
   final String imageLink;
   final String label;

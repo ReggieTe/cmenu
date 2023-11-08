@@ -1,5 +1,5 @@
-class image {
+class Image {
   final String file;
   final String id;
-  image(this.file, this.id);  
+  Image(this.file, this.id);  
 }

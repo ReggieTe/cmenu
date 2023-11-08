@@ -5,7 +5,17 @@ class SearchItem {
   final String id;
   final String name;
   final String address;
-  final List<MenuCategory> categories;  
-  final List<image> images;
-  SearchItem(this.id,this.name, this.address, this.categories, this.images, );
+  final String description;
+  final String phone;
+  final List<MenuCategory> categories;
+  final List<Image> images;
+  SearchItem(
+    this.id,
+    this.name,
+    this.address,
+    this.categories,
+    this.images,
+    this.description,
+    this.phone,
+  );
 }

@@ -1,11 +1,16 @@
 import 'package:cmenu/Cart/cart_screen.dart';
+import 'package:cmenu/Components/Api/api.service.list.dart';
 import 'package:cmenu/Components/Class/category_item.dart';
 import 'package:cmenu/Components/Class/product.dart';
+import 'package:cmenu/Components/Class/response.dart';
 import 'package:cmenu/Components/Model/cart.dart';
 import 'package:cmenu/Components/Model/item.dart';
+import 'package:cmenu/Components/Utils/common.dart';
 import 'package:cmenu/Components/Utils/setting_preferences.dart';
+import 'package:cmenu/Single/product_screen.dart';
 import 'package:cmenu/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:badges/badges.dart' as badges;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
@@ -39,7 +44,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
     super.initState();
     BannerAd(
       adUnitId: bannerAndroid,
-      request: AdRequest(),
+      request: const AdRequest(),
       size: AdSize.banner,
       listener: BannerAdListener(
         onAdLoaded: (ad) {
@@ -48,7 +53,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
           });
         },
         onAdFailedToLoad: (ad, err) {
-          print('Failed to load a banner ad: ${err.message}');
+          //print('Failed to load a banner ad: ${err.message}');
           ad.dispose();
         },
       ),
@@ -63,6 +68,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -76,14 +82,26 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 fontFamily: 'Quicksand'),
           ),
           actions: [
-            IconButton(
-                icon: const Icon(FontAwesomeIcons.cartShopping,
-                    color: kPrimaryColor),
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return const MyCart();
-                  }));
-                })
+            Consumer<CartModel>(
+              builder: (context, cart, child) => Padding(
+                  padding: const EdgeInsets.only(right: 15),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return const MyCart();
+                      }));
+                    },
+                    child: (cart.items.isNotEmpty)
+                        ? badges.Badge(
+                            badgeContent: Text(cart.items.length.toString(),
+                                style: const TextStyle(color: Colors.white)),
+                            child: const Icon(FontAwesomeIcons.list,
+                                color: kPrimaryColor),
+                          )
+                        : const Icon(FontAwesomeIcons.list),
+                  )),
+            ),
           ],
         ),
         body: Column(
@@ -92,7 +110,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
               if (_bannerAd != null)
                 Align(
                   alignment: Alignment.topCenter,
-                  child: Container(
+                  child: SizedBox(
                     width: _bannerAd!.size.width.toDouble(),
                     height: _bannerAd!.size.height.toDouble(),
                     child: AdWidget(ad: _bannerAd!),
@@ -111,9 +129,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text("Set Budget",
+                          title: const Text("Set Budget",
                               textAlign: TextAlign.center,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 overflow: TextOverflow.ellipsis,
                                 fontSize: 20,
                               )),
@@ -139,7 +157,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                   },
                                 ),
                               ),
-                              Text(
+                              const Text(
                                 'This is the total amount you want to spend',
                                 style:
                                     TextStyle(fontSize: 12, color: Colors.grey),
@@ -154,13 +172,13 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                     onPressed: () {
                                       Navigator.of(context).pop(false);
                                     },
-                                    child: Text('Cancel')),
+                                    child: const Text('Cancel')),
                                 TextButton(
                                     onPressed: () {
                                       setState(() {});
                                       Navigator.of(context).pop(false);
                                     },
-                                    child: Text('Save'))
+                                    child: const Text('Save'))
                               ],
                             )
                           ],
@@ -191,7 +209,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                           style: TextStyle(
                                               fontSize: 18,
                                               fontWeight: FontWeight.w600)),
-                                      Text("Total cost of item on your list",
+                                      Text("Total cost of items on your list",
                                           style: TextStyle(
                                             fontSize: 14,
                                           )),
@@ -267,16 +285,71 @@ class _CategoryScreenState extends State<CategoryScreen> {
               if (showSearchBar)
                 if (query.isNotEmpty)
                   Padding(
-                    padding: EdgeInsets.all(5),
+                    padding: const EdgeInsets.all(5),
                     child: Text(
-                      "Found " +
-                          products.length.toString() +
-                          " items for '" +
-                          query +
-                          "'",
-                      style: TextStyle(color: Colors.red),
+                      "Found ${products.length} items for '$query'",
+                      style: const TextStyle(color: Colors.red),
                     ),
                   ),
+              if (widget.categoryItem.category.categories.isNotEmpty)
+                for (var category in widget.categoryItem.category.categories)
+                 Padding(
+                                    padding: const EdgeInsets.only(bottom: 3,),
+                                    child: Container(
+                                        decoration: const BoxDecoration(
+                                            color: Color.fromARGB(15, 153, 153, 153),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(5.0))),
+                      padding: const EdgeInsets.only(top: 0, bottom: 0),
+                      child: ListTile(
+                        leading: Common.displayImage(
+                            images: category.images,
+                            imageType: 'place',
+                            imageHeight: 80,
+                            imageWidth: 80),
+                        title: Text(category.name,
+                            style: const TextStyle(
+                              overflow: TextOverflow.ellipsis,
+                              fontSize: 16,
+                            )),
+                        trailing: Container(
+                            decoration: const BoxDecoration(
+                                color: kPrimaryLightColor,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30.0))),
+                            padding: const EdgeInsets.only(top: 0, bottom: 0),
+                            child: Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 10, right: 10),
+                                child: Text(
+                                  category.products.length.toString(),
+                                  style: const TextStyle(
+                                      fontSize: 14,
+                                      color: kPrimaryColor,
+                                      fontWeight: FontWeight.bold),
+                                ))),
+                        subtitle: Text(category.description,
+                            style: const TextStyle(
+                              overflow: TextOverflow.ellipsis,
+                              fontSize: 14,
+                            )),
+                        onTap: () {
+                          // var catalog = Provider.of<CatalogModel>(context, listen: false);
+                          // catalog.updateItems(category.products);
+                          var catalog = context.read<CatalogModel>();
+                          catalog.updateItems(category.products);
+                          log(widget.categoryItem.id, 'category');
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return CategoryScreen(
+                                categoryItem: CategoryItem(
+                                    widget.categoryItem.id,
+                                    widget.categoryItem.name,
+                                    widget.categoryItem.address,
+                                    category));
+                          }));
+                        },
+                      ))),
               Expanded(
                   flex: 1,
                   child: Consumer<CatalogModel>(
@@ -285,120 +358,11 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         itemCount: catalog.items.length,
                         itemBuilder: (context, index) => (products
                                 .contains(catalog.items[index]))
-                            ? GestureDetector(
-                                onTap: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: Text(catalog.items[index].name,
-                                            style: const TextStyle(
-                                              overflow: TextOverflow.ellipsis,
-                                              fontSize: 14,
-                                            )),
-                                        content: Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Padding(
-                                                padding: EdgeInsets.all(10),
-                                                child: Image.asset(
-                                                  "assets/images/tray.png",
-                                                )),
-                                            if (catalog.items[index].description
-                                                .isNotEmpty)
-                                              Text(
-                                                catalog
-                                                    .items[index].description,
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Consumer<CartModel>(
-                                                  builder: (context, cart,
-                                                          child) =>
-                                                      Text(
-                                                          "$currencyCode ${catalog.items[index].price}",
-                                                          style: const TextStyle(
-                                                              fontSize: 20,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold)),
-                                                ),
-                                                Padding(
-                                                    padding: EdgeInsets.only(
-                                                        top: 10,
-                                                        bottom: 10,
-                                                        right: 15),
-                                                    child: Container(
-                                                        decoration: const BoxDecoration(
-                                                            color:
-                                                                Color.fromARGB(
-                                                                    255,
-                                                                    228,
-                                                                    227,
-                                                                    227),
-                                                            borderRadius:
-                                                                BorderRadius.all(
-                                                                    Radius.circular(
-                                                                        50.0))),
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .only(
-                                                                top: 5,
-                                                                bottom: 5,
-                                                                left: 5,
-                                                                right: 5),
-                                                        child: Column(
-                                                          children: [
-                                                            _ActionButton(
-                                                                delete: false,
-                                                                item: catalog
-                                                                        .items[
-                                                                    index]),
-                                                            Consumer<CartModel>(
-                                                              builder: (context, cart, child) => Text(
-                                                                  "${cart.itemCount(catalog.items[index]) != 0 ? "${cart.itemCount(catalog.items[index]).toString()}" : "0"}",
-                                                                  style: const TextStyle(
-                                                                      fontSize:
-                                                                          14,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                      color:
-                                                                          kPrimaryColor)),
-                                                            ),
-                                                            _ActionButton(
-                                                                delete: true,
-                                                                item: catalog
-                                                                        .items[
-                                                                    index])
-                                                          ],
-                                                        )))
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                              onPressed: () {
-                                                Navigator.of(context)
-                                                    .pop(false);
-                                              },
-                                              child: Text('Cancel'))
-                                        ],
-                                      );
-                                    },
-                                  );
-                                },
-                                child: Padding(
-                                    padding: const EdgeInsets.all(5),
+                            ? Padding(
+                                    padding: const EdgeInsets.only(bottom: 3,),
                                     child: Container(
                                         decoration: const BoxDecoration(
-                                            color: Color.fromARGB(
-                                                255, 244, 244, 244),
+                                            color: Color.fromARGB(15, 153, 153, 153),
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(5.0))),
                                         padding: const EdgeInsets.only(
@@ -407,15 +371,33 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            Row(
+                                            GestureDetector(
+                                onTap: () {
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (context) {
+                                    return ProductScreen(
+                                      categoryItem: widget.categoryItem,
+                                      product: catalog.items[index],
+                                    );
+                                  }));
+                                },
+                                child: Row(
                                               children: [
                                                 Padding(
-                                                    padding: EdgeInsets.all(10),
-                                                    child: Image.asset(
-                                                      "assets/images/tray.png",
-                                                      height: 50,
-                                                      width: 50,
-                                                    )),
+                                                    padding: const EdgeInsets.all(5),
+                                                    child: SizedBox(
+                                                        child:
+                                                            Common.displayImage(
+                                                                images: catalog
+                                                                    .items[
+                                                                        index]
+                                                                    .images,
+                                                                imageHeight: 80,
+                                                                imageWidth: 80,
+                                                                imageType:
+                                                                    catalog.items[index].type,
+                                                                    defaultImageFromUser: "dish"
+                                                                    ))),
                                                 Column(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment.start,
@@ -423,15 +405,35 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                                         CrossAxisAlignment
                                                             .start,
                                                     children: [
-                                                      Text(
-                                                        catalog
-                                                            .items[index].name,
-                                                        style: TextStyle(
-                                                            fontSize: 18,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis),
-                                                      ),
+                                                      SizedBox(
+                                                          width:
+                                                              size.width * 0.6,
+                                                          child: Text(
+                                                            catalog.items[index]
+                                                                .name,
+                                                            style: const TextStyle(
+                                                                fontSize: 18,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis),
+                                                          )),
+                                                      if (catalog
+                                                          .items[index]
+                                                          .description
+                                                          .isNotEmpty)
+                                                        SizedBox(
+                                                            width: size.width *
+                                                                0.6,
+                                                            child: Text(
+                                                              catalog
+                                                                  .items[index]
+                                                                  .description,
+                                                              style: const TextStyle(
+                                                                  fontSize: 12,
+                                                                  overflow:
+                                                                      TextOverflow
+                                                                          .ellipsis),
+                                                            )),
                                                       Consumer<CartModel>(
                                                         builder: (context, cart,
                                                                 child) =>
@@ -446,9 +448,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                                       )
                                                     ])
                                               ],
-                                            ),
+                                        )),
                                             Padding(
-                                                padding: EdgeInsets.only(
+                                                padding: const EdgeInsets.only(
                                                     top: 10,
                                                     bottom: 10,
                                                     right: 15),
@@ -474,7 +476,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                                                 .items[index]),
                                                         Consumer<CartModel>(
                                                           builder: (context, cart, child) => Text(
-                                                              "${cart.itemCount(catalog.items[index]) != 0 ? "${cart.itemCount(catalog.items[index]).toString()}" : "0"}",
+                                                              cart.itemCount(catalog.items[index]) != 0 ? cart.itemCount(catalog.items[index]).toString() : "0",
                                                               style: const TextStyle(
                                                                   fontSize: 14,
                                                                   fontWeight:
@@ -490,12 +492,12 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                                       ],
                                                     )))
                                           ],
-                                        ))))
+                                        )))
                             : Container());
                   })),
               if (showSearchBar)
                 Container(
-                    margin: EdgeInsets.all(10),
+                    margin: const EdgeInsets.all(10),
                     child: Padding(
                       padding: const EdgeInsets.all(5),
                       child: SearchBar(
@@ -513,8 +515,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         textStyle: MaterialStateProperty.all(
                             const TextStyle(color: Colors.teal)),
                         onChanged: (String value) {
-                          setState(() {                            
-                              query = value;
+                          setState(() {
+                            query = value;
                             if (value.isNotEmpty) {
                               products = products
                                   .where((e) => e.name
@@ -527,7 +529,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                           });
                         },
                         onTap: () {},
-                        trailing: [],
+                        trailing: const [],
                       ),
                     )),
             ]),
@@ -551,46 +553,83 @@ class _CategoryScreenState extends State<CategoryScreen> {
           ),
         ));
   }
+
+  log(String id, String section) async {
+    try {
+      String token = settings.token.isNotEmpty ? settings.token : '1234567890';
+      TrackDataModel requestModel =
+          TrackDataModel(id: id, section: section, token: token);
+      APIServiceList apiService = APIServiceList();
+      await apiService.track(requestModel).then((value) async {
+        if (value.error) {}
+        if (!value.error) {}
+      });
+    } catch (error) {
+      //print(error);
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Error encounter processing logs")));
+    }
+  }
 }
 
-class _ActionButton extends StatelessWidget {
+class _ActionButton extends StatefulWidget {
   final Product item;
   final bool delete;
 
   const _ActionButton({required this.item, required this.delete});
 
   @override
+  State<_ActionButton> createState() => _ActionButtonState();
+}
+
+class _ActionButtonState extends State<_ActionButton> {
+  var settings = SettingPreferences.getSetting();
+
+  @override
   Widget build(BuildContext context) {
-    var isInCart = context.select<CartModel, bool>(
-      // Here, we are only interested whether [item] is inside the cart.
-      (cart) => cart.items.contains(item),
-    );
     return GestureDetector(
-      child: delete
-          ? Icon(
+      child: widget.delete
+          ? const Icon(
               Icons.remove_circle_outline,
               color: Colors.red,
             )
-          : Icon(
+          : const Icon(
               Icons.add_circle_outline_rounded,
               color: Colors.green,
             ),
       onTap: () {
         var cart = context.read<CartModel>();
-        String message = 'Item added to cart';
-        if (delete) {
-          if (isInCart) {
-            var cart = context.read<CartModel>();
-            cart.remove(item);
-            message = 'Item removed from cart';
-          }
+        String message = '';
+        if (widget.delete) {
+          cart.remove(widget.item);
+          message = 'Item removed from order list';
         } else {
-          cart.add(item);
+          cart.add(widget.item);
+          message = 'Item added to order list';
+          log(widget.item.id, 'product');
         }
-
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(message.toString())));
+        if (message.isNotEmpty) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(message.toString())));
+        }
       },
     );
+  }
+
+  log(String id, String section) async {
+    try {
+      String token = settings.token.isNotEmpty ? settings.token : '1234567890';
+      TrackDataModel requestModel =
+          TrackDataModel(id: id, section: section, token: token);
+      APIServiceList apiService = APIServiceList();
+      await apiService.track(requestModel).then((value) async {
+        if (value.error) {}
+        if (!value.error) {}
+      });
+    } catch (error) {
+      //print(error);
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Error encounter processing logs")));
+    }
   }
 }

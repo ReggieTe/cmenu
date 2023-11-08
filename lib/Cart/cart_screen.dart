@@ -31,7 +31,7 @@ class _MyCartState extends State<MyCart> {
       appBar: AppBar(
         centerTitle: true,
         title: Consumer<CartModel>(
-          builder: (context, cart, child) => Text("Cart (${cart.items.length})",
+          builder: (context, cart, child) => Text("Order list (${cart.items.length})",
               style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Quicksand',
@@ -59,7 +59,7 @@ class _MyCartState extends State<MyCart> {
           const Divider(height: 4, color: Colors.grey),
           SizedBox(
      height: 100,
-      child:Padding(padding: EdgeInsets.all(5),child:Center(
+      child:Padding(padding: const EdgeInsets.all(5),child:Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -70,15 +70,15 @@ class _MyCartState extends State<MyCart> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                  Text("Remaining"),
+                  const Text("Remaining amount"),
                  GestureDetector(onTap:(){
                   showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text("Set Budget",
+                          title: const Text("Set Budget",
                               textAlign: TextAlign.center,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 overflow: TextOverflow.ellipsis,
                                 fontSize: 20,
                               )),
@@ -104,7 +104,7 @@ class _MyCartState extends State<MyCart> {
                                   },
                                 ),
                               ),
-                              Text(
+                              const Text(
                                 'This is the total amount you want to spend',
                                 style:
                                     TextStyle(fontSize: 12, color: Colors.grey),
@@ -119,13 +119,13 @@ class _MyCartState extends State<MyCart> {
                                     onPressed: () {
                                       Navigator.of(context).pop(false);
                                     },
-                                    child: Text('Cancel')),
+                                    child: const Text('Cancel')),
                                 TextButton(
                                     onPressed: () {
                                       setState(() {});
                                       Navigator.of(context).pop(false);
                                     },
-                                    child: Text('Save'))
+                                    child: const Text('Save'))
                               ],
                             )
                           ],
@@ -146,7 +146,7 @@ class _MyCartState extends State<MyCart> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Spent'),
+                    const Text('Total to be spent'),
 Consumer<CartModel>(
                 builder: (context, cart, child) =>
                     Text('$currencyCode ${cart.totalPrice}',style: const TextStyle(
@@ -212,6 +212,7 @@ class _CartList extends StatelessWidget {
                   "$currencyCode ${cart.items[index].price}",
                   style: const TextStyle(overflow: TextOverflow.ellipsis),
                 ),
+                onTap: (){},
               ),
             )));
   }

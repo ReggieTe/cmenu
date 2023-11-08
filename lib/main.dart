@@ -2,7 +2,6 @@
 import 'package:cmenu/Components/Model/cart.dart';
 import 'package:cmenu/Components/Model/history.dart';
 import 'package:cmenu/Components/Model/item.dart';
-import 'package:cmenu/Components/Utils/app_preferences.dart';
 import 'package:cmenu/Components/Utils/first_time_preferences.dart';
 import 'package:cmenu/Components/Utils/setting_preferences.dart';
 import 'package:cmenu/Splash/splash_screen.dart';
@@ -14,7 +13,6 @@ Future<void> main() async {
   
   WidgetsFlutterBinding.ensureInitialized();
   await SettingPreferences.init();
-  await AppPreferences.init();
   await FirstTimePreferences.init();  
   await MobileAds.instance.initialize();
   runApp(const MyApp());
@@ -46,13 +44,11 @@ class MyApp extends StatelessWidget {
           title: 'cMenu',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
-           // fontFamily: 'Quicksand',
+            // fontFamily: 'Quicksand',
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             useMaterial3: true,
           ),
           home: const SplashScreen(),
         ));
-
-    //return ;
   }
 }

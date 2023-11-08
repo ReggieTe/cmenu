@@ -4,7 +4,7 @@ import 'components/body.dart';
 import 'package:flutter/material.dart';
 
 class NoInternetConnectionScreen extends StatelessWidget {
-  const NoInternetConnectionScreen({Key? key}) : super(key: key);
+  const NoInternetConnectionScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class NoInternetConnectionScreen extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.bold, color: kPrimaryColor,fontFamily: 'Quicksand'),
           ),
         ),
-       body: Body(),
+       body: const Body(),
     );
   }
 }

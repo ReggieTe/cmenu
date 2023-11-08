@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:cmenu/Components/empty_page_content.dart';
 import 'package:cmenu/Components/rounded_button.dart';
 import 'package:cmenu/Splash/splash_screen.dart';
@@ -6,8 +8,8 @@ import 'background.dart';
 
 class Body extends StatefulWidget {
   const Body({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   _BodyState createState() => _BodyState();
