@@ -154,13 +154,29 @@ class _SearchScreenState extends State<SearchScreen> {
                             setState(() {
                               searchErrorMessage = '';
                             });
-                            await _search();
+                            if (query.isNotEmpty) {
+                              if (Common.isValidName(value)) {
+                                await _search();
+                              } else {
+                                setState(() {
+                                  searchErrorMessage =
+                                      "Special characters (,./?><!@#%^&*() not allowed.Try again";
+                                });
+                              }
+                            } else {
+                              setState(() {
+                                searchErrorMessage =
+                                    "Place name empty , must sure you type something.Try again";
+                              });
+                            }
                           },
                           onChanged: (String value) {
                             setState(() {
+                              searchErrorMessage = '';
                               query = value;
                             });
-                          },style: const TextStyle(color:  Colors.teal),                          
+                          },
+                          style: const TextStyle(color: Colors.teal),
                           decoration: InputDecoration(
                             filled: true,
                             focusColor: Colors.teal,
@@ -175,11 +191,42 @@ class _SearchScreenState extends State<SearchScreen> {
                                 ? searchErrorMessage
                                 : null,
                             hintStyle: const TextStyle(color: Colors.grey),
-                            suffixIcon: GestureDetector(child:const Icon(Icons.search) , onTap:() async {
-                              await _search();
-                            } ,),
+                            suffixIcon: GestureDetector(
+                              child: const Icon(Icons.search),
+                              onTap: () async {
+                                setState(() {
+                                  searchErrorMessage = '';
+                                });
+                                if (query.isNotEmpty) {
+                                  if (Common.isValidName(query)) {
+                                    await _search();
+                                  } else {
+                                    setState(() {
+                                      searchErrorMessage =
+                                          "Special characters (,./?><!@#%^&*() not allowed.Try again";
+                                    });
+                                  }
+                                } else {
+                                  setState(() {
+                                    searchErrorMessage =
+                                        "Place name empty , must sure you type something.Try again";
+                                  });
+                                }
+                              },
+                            ),
+                            prefixIcon: query.isNotEmpty
+                                ? GestureDetector(
+                                    child: const Icon(Icons.cancel),
+                                    onTap: () async {
+                                      setState(() {
+                                        query = '';
+                                        _textEditingController.clear();
+                                      });
+                                    },
+                                  )
+                                : null,
                             prefixIconColor: kPrimaryColor,
-                          ))),  
+                          ))),
                 if (showSearchResults)
                   Padding(
                     padding: const EdgeInsets.all(10),
@@ -514,8 +561,8 @@ class _SearchScreenState extends State<SearchScreen> {
         if (value.error) {
           setState(() {
             searchErrorMessage = 'Error getting search results';
-        });
-          
+          });
+
           ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Error getting search results')));
         }
@@ -584,7 +631,7 @@ class _SearchScreenState extends State<SearchScreen> {
         searchItems = searchItemss;
         searchCount = searchItems.length.toString();
         showSearchResults = true;
-        if(searchItems.isEmpty){
+        if (searchItems.isEmpty) {
           searchErrorMessage = 'O places found .Please try again';
         }
       });

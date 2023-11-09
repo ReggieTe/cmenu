@@ -11,6 +11,11 @@ class Common {
     return await InternetConnectionChecker().hasConnection;
   }
 
+  static bool isValidName(String name){
+    final nameRegExp = RegExp(r"^\s*([A-Za-z]{1,}([\.,] |[-']| ))+[A-Za-z]+\.?\s*$");
+    return nameRegExp.hasMatch(name);
+  }
+
   static Widget displayImage(
       {List<local_image.Image> images = const [],
       String imageType = 'default',
