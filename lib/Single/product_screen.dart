@@ -295,6 +295,8 @@ class _ProductScreenState extends State<ProductScreen> {
                     padding: const EdgeInsets.only(
                       top: 10,
                       bottom: 10,
+                      right: 5,
+                      left: 5
                     ),
                     child:Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -343,6 +345,7 @@ class _ProductScreenState extends State<ProductScreen> {
                                                 style: const TextStyle(
                                                   fontSize: 14,
                                                 )),
+                                                SizedBox(height:size.height*0.01,)
                                           ])),
                                 );
                               }

@@ -71,6 +71,7 @@ class _PlaceScreenState extends State<PlaceScreen> {
       body:SingleChildScrollView(
                 child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
               children: <Widget>[
                 if (_bannerAd != null)
                   Align(
@@ -114,26 +115,21 @@ class _PlaceScreenState extends State<PlaceScreen> {
                                     ],))),
                                 Padding(padding:const EdgeInsets.only(top:3),
                                 child: Container(
+                                  width: size.width,
                             decoration: const BoxDecoration(
                                 color: Color.fromARGB(15, 153, 153, 153),
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(5.0))),
                             padding: const EdgeInsets.only(top: 0, bottom: 0),
                             child: Padding(
-                                padding: const EdgeInsets.all(20),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [  
-                                      Text(widget.searchItem.address,
+                                padding: const EdgeInsets.all(15),
+                                child: Text(widget.searchItem.address,
                                           style: const TextStyle(
-                                              fontSize: 16,
-                                              overflow: TextOverflow.ellipsis)),                                              
-                                        const Icon(FontAwesomeIcons.locationDot,color: kPrimaryColor,), 
-
-                                      ])))),
+                                              fontSize: 16))))),
                                       if(widget.searchItem.phone.isNotEmpty)
                                 Padding(padding:const EdgeInsets.only(top:3),
                                 child: Container(
+                                  width: size.width,
                             decoration: const BoxDecoration(
                                 color: Color.fromARGB(15, 153, 153, 153),
                                 borderRadius:
@@ -141,18 +137,12 @@ class _PlaceScreenState extends State<PlaceScreen> {
                             padding: const EdgeInsets.only(top: 0, bottom: 0),
                             child: Padding(
                                 padding: const EdgeInsets.all(20),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [  
-                                      Text(widget.searchItem.phone,
+                                child:Text(widget.searchItem.phone,
+                                overflow: TextOverflow.clip,
                                           style: const TextStyle(
-                                              fontSize: 16,
-                                              overflow: TextOverflow.ellipsis)),                                              
-                                        const Icon(FontAwesomeIcons.squarePhone,color: kPrimaryColor,), 
-
-                                      ])))),
+                                              fontSize: 12))))),
                             if (widget.searchItem.description.isNotEmpty)
-                              Padding(padding:const EdgeInsets.only(top:3),
+                              Padding(padding:const EdgeInsets.all(5),
                                 child:Text(
                                 widget.searchItem.description,
                                 style: const TextStyle(fontSize: 14),
