@@ -37,6 +37,7 @@ class MyApp extends StatelessWidget {
               if (cart == null) throw ArgumentError.notNull('cart');
               cart.catalog = catalog;
               return cart;
+      
             },
           ),
         ],

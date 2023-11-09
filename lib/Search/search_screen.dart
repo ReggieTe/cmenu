@@ -36,12 +36,20 @@ class _SearchScreenState extends State<SearchScreen> {
   String searchName = "Search results";
   String searchCount = "0";
   bool showSearchResults = false;
+  String searchErrorMessage = '';
 
   @override
   void initState() {
     getTags();
     getSettings();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _textEditingController.dispose();
+    super.dispose();
   }
 
   @override
@@ -53,6 +61,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _uiSetup(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+
     return WillPopScope(
         onWillPop: () {
           return Future.value(false);
@@ -80,7 +89,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   onPressed: () {
                     if (showSearchBar) {
                       setState(() {
-                        showSearchBar = false;                        
+                        showSearchBar = false;
                         showSearchResults = false;
                         var history = context.read<HistoryModel>();
                         searchItems = history.items;
@@ -138,37 +147,39 @@ class _SearchScreenState extends State<SearchScreen> {
                     )),
                 if (showSearchBar)
                   Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: SearchBar(
-                        focusNode: focusNode,
-                        controller: _textEditingController,
-                        shape: MaterialStateProperty.all(
-                            const ContinuousRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
-                        )),
-                        shadowColor: MaterialStateProperty.all(Colors.white),
-                        backgroundColor:
-                            MaterialStateProperty.all(Colors.white),
-                        hintText: 'Type keyword',
-                        hintStyle: MaterialStateProperty.all(
-                            const TextStyle(color: Colors.grey)),
-                        textStyle: MaterialStateProperty.all(
-                            const TextStyle(color: Colors.teal)),
-                        onChanged: (String value) {
-                          setState(() {
-                            query = value;
-                          });
-                        },
-                        onTap: () {},
-                        trailing: [
-                          IconButton(
-                            icon: const Icon(Icons.search),
-                            onPressed: () async {
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      child: TextField(
+                          controller: _textEditingController,
+                          onSubmitted: (value) async {
+                            setState(() {
+                              searchErrorMessage = '';
+                            });
+                            await _search();
+                          },
+                          onChanged: (String value) {
+                            setState(() {
+                              query = value;
+                            });
+                          },style: const TextStyle(color:  Colors.teal),                          
+                          decoration: InputDecoration(
+                            filled: true,
+                            focusColor: Colors.teal,
+                            fillColor: Colors.grey.shade200,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              borderSide: BorderSide.none,
+                            ),
+                            hintText: "Search for place",
+                            hintMaxLines: 1,
+                            errorText: searchErrorMessage.isNotEmpty
+                                ? searchErrorMessage
+                                : null,
+                            hintStyle: const TextStyle(color: Colors.grey),
+                            suffixIcon: GestureDetector(child:const Icon(Icons.search) , onTap:() async {
                               await _search();
-                            },
-                          ),
-                        ],
-                      )),
+                            } ,),
+                            prefixIconColor: kPrimaryColor,
+                          ))),  
                 if (showSearchResults)
                   Padding(
                     padding: const EdgeInsets.all(10),
@@ -262,13 +273,13 @@ class _SearchScreenState extends State<SearchScreen> {
                                   imageWidth: 60),
                               title: Text(
                                 item.name,
-                                style:
-                                    const TextStyle(overflow: TextOverflow.ellipsis),
+                                style: const TextStyle(
+                                    overflow: TextOverflow.ellipsis),
                               ),
                               subtitle: Text(
                                 item.address,
-                                style:
-                                    const TextStyle(overflow: TextOverflow.ellipsis),
+                                style: const TextStyle(
+                                    overflow: TextOverflow.ellipsis),
                               ),
                               trailing: GestureDetector(
                                 child: Image.asset(
@@ -343,7 +354,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                               MainAxisAlignment.end,
                                           children: [
                                             Padding(
-                                                padding: const EdgeInsets.all(50),
+                                                padding:
+                                                    const EdgeInsets.all(50),
                                                 child: ElevatedButton(
                                                     onPressed: () {
                                                       setState(() {
@@ -369,13 +381,6 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
               ])),
             )));
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    _textEditingController.dispose();
-    super.dispose();
   }
 
   log(String id, String section) async {
@@ -507,6 +512,10 @@ class _SearchScreenState extends State<SearchScreen> {
           inProgress = false;
         });
         if (value.error) {
+          setState(() {
+            searchErrorMessage = 'Error getting search results';
+        });
+          
           ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Error getting search results')));
         }
@@ -525,7 +534,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       sortString(product['description']),
                       sortString(product['discount']),
                       processImages(product['image']),
-                      type:sortString(product['type']) ));
+                      type: sortString(product['type'])));
                 }
                 //SORT SUB-CARTEGORIES
                 if (sortArray(category['categories'])) {
@@ -539,7 +548,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           sortString(product['description']),
                           sortString(product['discount']),
                           processImages(product['image']),
-                           type:sortString(product['type']) ));
+                          type: sortString(product['type'])));
                     }
 
                     subCategories.add(MenuCategory(
@@ -560,22 +569,24 @@ class _SearchScreenState extends State<SearchScreen> {
               }
             }
             searchItemss.add(SearchItem(
-              place['id'], 
-              place['name'],
+                place['id'],
+                place['name'],
                 place['address'],
-                 categories,
-                  processImages(place['image']),
-                 sortString(place['description']),
-                  sortString(place['phone'])
-                  ));
+                categories,
+                processImages(place['image']),
+                sortString(place['description']),
+                sortString(place['phone'])));
           }
         }
       });
       //}
       setState(() {
-        searchItems = searchItemss;        
+        searchItems = searchItemss;
         searchCount = searchItems.length.toString();
         showSearchResults = true;
+        if(searchItems.isEmpty){
+          searchErrorMessage = 'O places found .Please try again';
+        }
       });
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -587,8 +598,8 @@ class _SearchScreenState extends State<SearchScreen> {
     List<local_image.Image> productImages = [];
     for (var element in images) {
       if (element.containsKey('file')) {
-        productImages
-            .add(local_image.Image(element['file'].toString(), element['id'].toString()));
+        productImages.add(local_image.Image(
+            element['file'].toString(), element['id'].toString()));
       }
     }
     return productImages;
@@ -605,5 +616,4 @@ class _SearchScreenState extends State<SearchScreen> {
         ? false
         : true;
   }
-
 }
