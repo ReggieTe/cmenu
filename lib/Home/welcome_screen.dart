@@ -26,6 +26,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:open_filex/open_filex.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -625,9 +626,17 @@ class _HomeScreenState extends State<HomeScreen> {
       var response = await request.close();
       var bytes = await consolidateHttpClientResponseBytes(response);
 
-      path = await ExternalPath.getExternalStoragePublicDirectory(
-          ExternalPath.DIRECTORY_DOWNLOADS);
-      String localPath = path + Platform.pathSeparator;
+      String localPath = "";
+      if (Platform.isIOS) {
+        var directory = await getApplicationDocumentsDirectory();
+        localPath = '${directory.path}${Platform.pathSeparator}';
+      }
+      if(Platform.isAndroid){
+        path = await ExternalPath.getExternalStoragePublicDirectory(
+            ExternalPath.DIRECTORY_DOWNLOADS);
+        localPath = path + Platform.pathSeparator;
+      }
+
       final savedDir = Directory(localPath);
       bool hasExisted = await savedDir.exists();
       if (!hasExisted) {
@@ -640,7 +649,6 @@ class _HomeScreenState extends State<HomeScreen> {
           .showSnackBar(const SnackBar(content: Text("Opening pdf menu")));
       await OpenFilex.open(fullPath);
     } catch (error) {
-      //print(error);
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("pdf downloading error")));
     }
