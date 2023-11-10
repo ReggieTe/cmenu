@@ -1,20 +1,20 @@
-
 import 'package:cmenu/Components/Model/cart.dart';
 import 'package:cmenu/Components/Model/history.dart';
 import 'package:cmenu/Components/Model/item.dart';
 import 'package:cmenu/Components/Utils/first_time_preferences.dart';
 import 'package:cmenu/Components/Utils/setting_preferences.dart';
 import 'package:cmenu/Splash/splash_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
-  
   WidgetsFlutterBinding.ensureInitialized();
   await SettingPreferences.init();
-  await FirstTimePreferences.init();  
+  await FirstTimePreferences.init();
   await MobileAds.instance.initialize();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
               catalog.itemNames = catalog.itemNames;
               if (cart == null) throw ArgumentError.notNull('cart');
               cart.catalog = catalog;
-              return cart;      
+              return cart;
             },
           ),
         ],

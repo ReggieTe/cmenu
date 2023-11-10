@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-4029429063328473~1032539477</string>
+	<string>ca-app-pub-4029429063328473~2646180375</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -49,5 +49,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+    <key>kTCCServiceMediaLibrary</key>
+    <string>media</string>
+
+
 </dict>
 </plist>

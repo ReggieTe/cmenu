@@ -1,4 +1,5 @@
 import 'package:cmenu/Components/Api/api.service.list.dart';
+import 'package:cmenu/Components/Class/ad.dart';
 import 'package:cmenu/Components/Class/image.dart' as local_image;
 import 'package:cmenu/Components/Class/menu_category.dart';
 import 'package:cmenu/Components/Class/product.dart';
@@ -622,7 +623,8 @@ class _SearchScreenState extends State<SearchScreen> {
                 categories,
                 processImages(place['image']),
                 sortString(place['description']),
-                sortString(place['phone'])));
+                sortString(place['phone']),
+                processAds(place['ads'])));
           }
         }
       });
@@ -650,6 +652,15 @@ class _SearchScreenState extends State<SearchScreen> {
       }
     }
     return productImages;
+  }
+
+  List<Ad> processAds(var adList) {
+    List<Ad> ads = [];
+    for (var element in adList) {
+      ads.add(Ad(element['id'].toString(), processImages(element['images'])));
+    }
+
+    return ads;
   }
 
   String sortString(var item) {

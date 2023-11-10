@@ -1,3 +1,4 @@
+import 'package:cmenu/Components/Class/ad.dart';
 import 'package:cmenu/Components/Class/image.dart';
 import 'package:cmenu/Components/Class/menu_category.dart';
 
@@ -9,6 +10,7 @@ class SearchItem {
   final String phone;
   final List<MenuCategory> categories;
   final List<Image> images;
+  final List<Ad> ads;
   SearchItem(
     this.id,
     this.name,
@@ -17,5 +19,6 @@ class SearchItem {
     this.images,
     this.description,
     this.phone,
+    this.ads
   );
 }

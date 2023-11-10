@@ -16,6 +16,7 @@ import 'package:cmenu/Components/Utils/setting_preferences.dart';
 import 'package:cmenu/Components/empty_page_content.dart';
 import 'package:cmenu/Components/progress_loader.dart';
 import 'package:cmenu/Home/components/background.dart';
+import 'package:cmenu/Single/gallery_screen.dart';
 import 'package:cmenu/Single/place_screen.dart';
 import 'package:cmenu/constants.dart';
 import 'package:external_path/external_path.dart';
@@ -53,6 +54,8 @@ class _HomeScreenState extends State<HomeScreen> {
   double download = 0;
   String savePath = "";
 
+  bool showPromotions = true;
+
   @override
   void initState() {
     categories = widget.searchItem.categories;
@@ -71,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         },
         onAdFailedToLoad: (ad, err) {
-         // print('Failed to load a banner ad: ${err.message}');
+          // print('Failed to load a banner ad: ${err.message}');
           ad.dispose();
         },
       ),
@@ -97,36 +100,41 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: AppBar(
           centerTitle: true,
           elevation: 0,
-          title:GestureDetector(onTap: (){
+          title: GestureDetector(
+              onTap: () {
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return PlaceScreen(searchItem: widget.searchItem);
                 }));
-
-          },child:Text(
-            widget.searchItem.name,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: kPrimaryColor,
-                fontFamily: 'Quicksand',
-                overflow: TextOverflow.ellipsis),
-          )),
+              },
+              child: Text(
+                widget.searchItem.name,
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: kPrimaryColor,
+                    fontFamily: 'Quicksand',
+                    overflow: TextOverflow.ellipsis),
+              )),
           actions: <Widget>[
             Consumer<CartModel>(
-            builder: (context, cart, child) => Padding(padding: const EdgeInsets.only(right:15),
-           child: GestureDetector(
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const MyCart();
-                }));
-              },
-              child: (cart.items.isNotEmpty)
-                  ? badges.Badge(
-                      badgeContent: Text(cart.items.length.toString(),style:const TextStyle(color: Colors.white)),
-                      child: const Icon(FontAwesomeIcons.list, color: kPrimaryColor),
-                    )
-                  : const Icon(FontAwesomeIcons.list),
-            )),
-              ),
+              builder: (context, cart, child) => Padding(
+                  padding: const EdgeInsets.only(right: 15),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return const MyCart();
+                      }));
+                    },
+                    child: (cart.items.isNotEmpty)
+                        ? badges.Badge(
+                            badgeContent: Text(cart.items.length.toString(),
+                                style: const TextStyle(color: Colors.white)),
+                            child: const Icon(FontAwesomeIcons.list,
+                                color: kPrimaryColor),
+                          )
+                        : const Icon(FontAwesomeIcons.list),
+                  )),
+            ),
           ],
         ),
         body: Background(
@@ -270,6 +278,66 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   ],
                                 ))))),
+                if (widget.searchItem.ads.isNotEmpty)
+                  Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                    "Promotions (${widget.searchItem.ads.length})",
+                                    style: const TextStyle(fontSize: 16)),
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      showPromotions =
+                                          showPromotions ? false : true;
+                                    });
+                                  },
+                                  child: Text(
+                                    showPromotions ? "Hide" : "View",
+                                    style: TextStyle(
+                                        color: showPromotions
+                                            ? Colors.red
+                                            : kPrimaryColor),
+                                  ),
+                                )
+                              ],
+                            ),
+                            if (showPromotions)
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: [
+                                    for (var i in widget.searchItem.ads)
+                                      GestureDetector(
+                                          onTap: () {
+                                            log(i.id, "ad");
+                                            Navigator.push(context,
+                                                MaterialPageRoute(
+                                                    builder: (context) {
+                                              return GalleryScreen(
+                                                  searchItem: widget.searchItem,
+                                                  images: i.images);
+                                            }));
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(5),
+                                            child: Common.displayImage(
+                                                images: i.images,
+                                                imageType: 'ad',
+                                                imageHeight: size.height * 0.20,
+                                                imageWidth: size.width * 0.30),
+                                          ))
+                                  ],
+                                ),
+                              )
+                          ])),
                 Padding(
                     padding: const EdgeInsets.all(5),
                     child: Row(
@@ -277,7 +345,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         const Text("Menu",
                             style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.w600)),
+                                fontSize: 18, fontWeight: FontWeight.w600)),
                         Row(
                           children: [
                             IconButton(
@@ -318,60 +386,67 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: ListView.builder(
                   itemCount: categories.length,
                   itemBuilder: (context, index) {
-                    return Padding(padding: const EdgeInsets.only(bottom: 3,),child:Container(
-                        decoration: const BoxDecoration(
-                                            color: Color.fromARGB(15, 153, 153, 153),
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(5.0))),
-                        padding: const EdgeInsets.only(top: 3, bottom: 3),
-                        child: ListTile(
-                          leading: Common.displayImage(
-                              images: categories[index].images,
-                              imageType: 'place',imageHeight: 60,imageWidth: 60),
-                          title: Text(categories[index].name,
-                              style: const TextStyle(
-                                overflow: TextOverflow.ellipsis,
-                                fontSize: 16,
-                              )),
-                          trailing: Container(
-                              decoration: const BoxDecoration(
-                                  color: kPrimaryLightColor,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(30.0))),
-                              padding: const EdgeInsets.only(top: 0, bottom: 0),
-                              child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 10, right: 10),
-                                  child: Text(
-                                    categories[index]
-                                        .products
-                                        .length
-                                        .toString(),
-                                    style: const TextStyle(
-                                        fontSize: 14,
-                                        color: kPrimaryColor,
-                                        fontWeight: FontWeight.bold),
-                                  ))),
-                          subtitle: Text(categories[index].description,
-                              style: const TextStyle(
-                                overflow: TextOverflow.ellipsis,
-                                fontSize: 14,
-                              )),
-                          onTap: () {
-                            var catalog = context.read<CatalogModel>();
-                            catalog.updateItems(categories[index].products);
-                            log(widget.searchItem.id, "category");
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) {
-                              return CategoryScreen(
-                                  categoryItem: CategoryItem(
-                                      widget.searchItem.id,
-                                      widget.searchItem.name,
-                                      widget.searchItem.address,
-                                      categories[index]));
-                            }));
-                          },
-                        )));
+                    return Padding(
+                        padding: const EdgeInsets.only(
+                          bottom: 3,
+                        ),
+                        child: Container(
+                            decoration: const BoxDecoration(
+                                color: Color.fromARGB(15, 153, 153, 153),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5.0))),
+                            padding: const EdgeInsets.only(top: 3, bottom: 3),
+                            child: ListTile(
+                              leading: Common.displayImage(
+                                  images: categories[index].images,
+                                  imageType: 'place',
+                                  imageHeight: 60,
+                                  imageWidth: 60),
+                              title: Text(categories[index].name,
+                                  style: const TextStyle(
+                                    overflow: TextOverflow.ellipsis,
+                                    fontSize: 16,
+                                  )),
+                              trailing: Container(
+                                  decoration: const BoxDecoration(
+                                      color: kPrimaryLightColor,
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(30.0))),
+                                  padding:
+                                      const EdgeInsets.only(top: 0, bottom: 0),
+                                  child: Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 10, right: 10),
+                                      child: Text(
+                                        categories[index]
+                                            .products
+                                            .length
+                                            .toString(),
+                                        style: const TextStyle(
+                                            fontSize: 14,
+                                            color: kPrimaryColor,
+                                            fontWeight: FontWeight.bold),
+                                      ))),
+                              subtitle: Text(categories[index].description,
+                                  style: const TextStyle(
+                                    overflow: TextOverflow.ellipsis,
+                                    fontSize: 14,
+                                  )),
+                              onTap: () {
+                                var catalog = context.read<CatalogModel>();
+                                catalog.updateItems(categories[index].products);
+                                log(widget.searchItem.id, "category");
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return CategoryScreen(
+                                      categoryItem: CategoryItem(
+                                          widget.searchItem.id,
+                                          widget.searchItem.name,
+                                          widget.searchItem.address,
+                                          categories[index]));
+                                }));
+                              },
+                            )));
                   },
                 )),
               if (categories.isEmpty)
@@ -439,8 +514,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
               }
             } else {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(const SnackBar(content: Text("Nothing to search")));
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Nothing to search")));
             }
           },
           child: Icon(
@@ -559,8 +634,7 @@ class _HomeScreenState extends State<HomeScreen> {
         savedDir.create();
       }
 
-      String fullPath =
-          '$localPath${widget.searchItem.name.toLowerCase()}.pdf';
+      String fullPath = '$localPath${widget.searchItem.name.toLowerCase()}.pdf';
       await File(fullPath).writeAsBytes(bytes);
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Opening pdf menu")));

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "279438736618",
+    "project_id": "cmenu-8af16",
+    "storage_bucket": "cmenu-8af16.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:279438736618:android:0db7a473e321541753eb93",
+        "android_client_info": {
+          "package_name": "cmenu.app.za"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaVSnhyvNz9zwymXgTBTivBDEKfkijcM8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

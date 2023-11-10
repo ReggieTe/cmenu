@@ -12,7 +12,7 @@ class Common {
   }
 
   static bool isValidName(String name){
-    final nameRegExp = RegExp(r"^\s*([A-Za-z]{1,}([\.,] |[-']| ))+[A-Za-z]+\.?\s*$");
+    final nameRegExp = RegExp(r"^\s*([A-Za-z ]{1,})$");
     return nameRegExp.hasMatch(name);
   }
 
@@ -26,13 +26,17 @@ class Common {
     String defaultImage = "assets/images/$defaultImageFromUser.png";
     if (images.isNotEmpty) {
       if (displayMultiple) {
-        return CarouselSlider(
+        return SizedBox(
+                height:imageHeight ,
+                width: imageWidth,
+                child:CarouselSlider(
           options: CarouselOptions(height: imageHeight),
           items: images.map((i) {
             return Builder(builder: (BuildContext context) {
               return ImageFade(
                 image: NetworkImage(i.file),
-                fit: BoxFit.cover,
+                height:imageHeight ,
+                fit: BoxFit.fitWidth,
                 placeholder: Image.asset(defaultImage),
                 loadingBuilder: (context, progress, chunkEvent) =>
                     CircularProgressIndicator(value: progress),
@@ -43,7 +47,7 @@ class Common {
               );
             });
           }).toList(),
-        );
+        ));
       } else {
         return ClipRRect(
           borderRadius: BorderRadius.circular(5),
