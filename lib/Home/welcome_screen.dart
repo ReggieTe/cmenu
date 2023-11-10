@@ -19,6 +19,7 @@ import 'package:cmenu/Home/components/background.dart';
 import 'package:cmenu/Single/gallery_screen.dart';
 import 'package:cmenu/Single/place_screen.dart';
 import 'package:cmenu/constants.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:external_path/external_path.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:flutter/foundation.dart';
@@ -580,14 +581,33 @@ class _HomeScreenState extends State<HomeScreen> {
 
   createPdf(String fileUrl) async {
     try {
-      await Permission.storage.request();
-      final permissionStatus = await Permission.storage.status;
-      if (permissionStatus.isDenied) {
+      bool permissionGranted = true;
+      DeviceInfoPlugin plugin = DeviceInfoPlugin();
+      if (Platform.isAndroid) {
+        AndroidDeviceInfo android = await plugin.androidInfo;
+        if (android.version.sdkInt < 33) {
+          if (await Permission.storage.request().isGranted) {
+            setState(() {
+              permissionGranted = true;
+            });
+          } else if (await Permission.storage.request().isPermanentlyDenied) {
+            permissionGranted = false;
+          }
+        }
+      }
+      if(Platform.isIOS){
+        if (await Permission.storage.request().isPermanentlyDenied) {
+            setState(() {
+              permissionGranted = false;
+            });
+          }
+      }
+      if (!permissionGranted) {
         return showDialog(
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                  title: const Text("Storage Permission",
+                  title: const Text("Storage Permission required",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         overflow: TextOverflow.ellipsis,
@@ -631,7 +651,7 @@ class _HomeScreenState extends State<HomeScreen> {
         var directory = await getApplicationDocumentsDirectory();
         localPath = '${directory.path}${Platform.pathSeparator}';
       }
-      if(Platform.isAndroid){
+      if (Platform.isAndroid) {
         path = await ExternalPath.getExternalStoragePublicDirectory(
             ExternalPath.DIRECTORY_DOWNLOADS);
         localPath = path + Platform.pathSeparator;
