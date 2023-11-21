@@ -3,10 +3,12 @@ import 'package:cmenu/Components/Api/api.service.list.dart';
 import 'package:cmenu/Components/Class/category_item.dart';
 import 'package:cmenu/Components/Class/product.dart';
 import 'package:cmenu/Components/Class/response.dart';
+import 'package:cmenu/Components/Class/search_item.dart';
 import 'package:cmenu/Components/Model/cart.dart';
 import 'package:cmenu/Components/Model/item.dart';
 import 'package:cmenu/Components/Utils/common.dart';
 import 'package:cmenu/Components/Utils/setting_preferences.dart';
+import 'package:cmenu/Single/gallery_screen.dart';
 import 'package:cmenu/Single/product_screen.dart';
 import 'package:cmenu/constants.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +19,9 @@ import 'package:provider/provider.dart';
 
 class CategoryScreen extends StatefulWidget {
   final CategoryItem categoryItem;
+  final SearchItem searchItem;
 
-  const CategoryScreen({super.key, required this.categoryItem});
+  const CategoryScreen({super.key,required this.searchItem, required this.categoryItem});
 
   @override
   State<CategoryScreen> createState() => _CategoryScreenState();
@@ -33,6 +36,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   double totalBudget = 0.0;
   BannerAd? _bannerAd;
   List<Product> products = [];
+  bool showPromotions = true;
   var settings = SettingPreferences.getSetting();
 
   @override
@@ -240,6 +244,67 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                   ),
                                 ],
                               ))))),
+             if (widget.searchItem.ads.isNotEmpty)
+                  Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                    "Promotions (${widget.searchItem.ads.length})",
+                                    style: const TextStyle(fontSize: 16)),
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      showPromotions =
+                                          showPromotions ? false : true;
+                                    });
+                                  },
+                                  child: Text(
+                                    showPromotions ? "Hide" : "View",
+                                    style: TextStyle(
+                                        color: showPromotions
+                                            ? Colors.red
+                                            : kPrimaryColor),
+                                  ),
+                                )
+                              ],
+                            ),
+                            if (showPromotions)
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: [
+                                    for (var i in widget.searchItem.ads)
+                                      GestureDetector(
+                                          onTap: () {
+                                            log(i.id, "ad");
+                                            Navigator.push(context,
+                                                MaterialPageRoute(
+                                                    builder: (context) {
+                                              return GalleryScreen(
+                                                  searchItem: widget.searchItem,
+                                                  images: i.images);
+                                            }));
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(5),
+                                            child: Common.displayImage(
+                                                images: i.images,
+                                                imageType: 'ad',
+                                                imageHeight: size.height * 0.20,
+                                                imageWidth: size.width * 0.30),
+                                          ))
+                                  ],
+                                ),
+                              )
+                          ])),
+             
               Padding(
                   padding: const EdgeInsets.only(left: 5, top: 5),
                   child: Row(
@@ -293,63 +358,67 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   ),
               if (widget.categoryItem.category.categories.isNotEmpty)
                 for (var category in widget.categoryItem.category.categories)
-                 Padding(
-                                    padding: const EdgeInsets.only(bottom: 3,),
-                                    child: Container(
-                                        decoration: const BoxDecoration(
-                                            color: Color.fromARGB(15, 153, 153, 153),
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(5.0))),
-                      padding: const EdgeInsets.only(top: 0, bottom: 0),
-                      child: ListTile(
-                        leading: Common.displayImage(
-                            images: category.images,
-                            imageType: 'place',
-                            imageHeight: 80,
-                            imageWidth: 80),
-                        title: Text(category.name,
-                            style: const TextStyle(
-                              overflow: TextOverflow.ellipsis,
-                              fontSize: 16,
-                            )),
-                        trailing: Container(
-                            decoration: const BoxDecoration(
-                                color: kPrimaryLightColor,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(30.0))),
-                            padding: const EdgeInsets.only(top: 0, bottom: 0),
-                            child: Padding(
+                  Padding(
+                      padding: const EdgeInsets.only(
+                        bottom: 3,
+                      ),
+                      child: Container(
+                          decoration: const BoxDecoration(
+                              color: Color.fromARGB(15, 153, 153, 153),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5.0))),
+                          padding: const EdgeInsets.only(top: 0, bottom: 0),
+                          child: ListTile(
+                            leading: Common.displayImage(
+                                images: category.images,
+                                imageType: 'place',
+                                imageHeight: 80,
+                                imageWidth: 80),
+                            title: Text(category.name,
+                                style: const TextStyle(
+                                  overflow: TextOverflow.ellipsis,
+                                  fontSize: 16,
+                                )),
+                            trailing: Container(
+                                decoration: const BoxDecoration(
+                                    color: kPrimaryLightColor,
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(30.0))),
                                 padding:
-                                    const EdgeInsets.only(left: 10, right: 10),
-                                child: Text(
-                                  category.products.length.toString(),
-                                  style: const TextStyle(
-                                      fontSize: 14,
-                                      color: kPrimaryColor,
-                                      fontWeight: FontWeight.bold),
-                                ))),
-                        subtitle: Text(category.description,
-                            style: const TextStyle(
-                              overflow: TextOverflow.ellipsis,
-                              fontSize: 14,
-                            )),
-                        onTap: () {
-                          // var catalog = Provider.of<CatalogModel>(context, listen: false);
-                          // catalog.updateItems(category.products);
-                          var catalog = context.read<CatalogModel>();
-                          catalog.updateItems(category.products);
-                          log(widget.categoryItem.id, 'category');
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return CategoryScreen(
-                                categoryItem: CategoryItem(
-                                    widget.categoryItem.id,
-                                    widget.categoryItem.name,
-                                    widget.categoryItem.address,
-                                    category));
-                          }));
-                        },
-                      ))),
+                                    const EdgeInsets.only(top: 0, bottom: 0),
+                                child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 10, right: 10),
+                                    child: Text(
+                                      category.products.length.toString(),
+                                      style: const TextStyle(
+                                          fontSize: 14,
+                                          color: kPrimaryColor,
+                                          fontWeight: FontWeight.bold),
+                                    ))),
+                            subtitle: Text(category.description,
+                                style: const TextStyle(
+                                  overflow: TextOverflow.ellipsis,
+                                  fontSize: 14,
+                                )),
+                            onTap: () {
+                              // var catalog = Provider.of<CatalogModel>(context, listen: false);
+                              // catalog.updateItems(category.products);
+                              var catalog = context.read<CatalogModel>();
+                              catalog.updateItems(category.products);
+                              log(widget.categoryItem.id, 'category');
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return CategoryScreen(
+                                    searchItem:widget.searchItem,
+                                    categoryItem: CategoryItem(
+                                        widget.categoryItem.id,
+                                        widget.categoryItem.name,
+                                        widget.categoryItem.address,
+                                        category));
+                              }));
+                            },
+                          ))),
               Expanded(
                   flex: 1,
                   child: Consumer<CatalogModel>(
@@ -359,45 +428,51 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         itemBuilder: (context, index) => (products
                                 .contains(catalog.items[index]))
                             ? Padding(
-                                    padding: const EdgeInsets.only(bottom: 3,),
-                                    child: Container(
-                                        decoration: const BoxDecoration(
-                                            color: Color.fromARGB(15, 153, 153, 153),
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(5.0))),
-                                        padding: const EdgeInsets.only(
-                                            top: 0, bottom: 0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            GestureDetector(
-                                onTap: () {
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) {
-                                    return ProductScreen(
-                                      categoryItem: widget.categoryItem,
-                                      product: catalog.items[index],
-                                    );
-                                  }));
-                                },
-                                child: Row(
+                                padding: const EdgeInsets.only(
+                                  bottom: 3,
+                                ),
+                                child: Container(
+                                    decoration: const BoxDecoration(
+                                        color:
+                                            Color.fromARGB(15, 153, 153, 153),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(5.0))),
+                                    padding: const EdgeInsets.only(
+                                        top: 0, bottom: 0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        GestureDetector(
+                                            onTap: () {
+                                              Navigator.push(context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) {
+                                                return ProductScreen(
+                                                  searchItem: widget.searchItem,
+                                                  categoryItem:
+                                                      widget.categoryItem,
+                                                  product: catalog.items[index],
+                                                );
+                                              }));
+                                            },
+                                            child: Row(
                                               children: [
                                                 Padding(
-                                                    padding: const EdgeInsets.all(5),
+                                                    padding:
+                                                        const EdgeInsets.all(5),
                                                     child: SizedBox(
-                                                        child:
-                                                            Common.displayImage(
-                                                                images: catalog
-                                                                    .items[
-                                                                        index]
-                                                                    .images,
-                                                                imageHeight: 80,
-                                                                imageWidth: 80,
-                                                                imageType:
-                                                                    catalog.items[index].type,
-                                                                    defaultImageFromUser: "dish"
-                                                                    ))),
+                                                        child: Common.displayImage(
+                                                            images: catalog
+                                                                .items[index]
+                                                                .images,
+                                                            imageHeight: 80,
+                                                            imageWidth: 80,
+                                                            imageType: catalog
+                                                                .items[index]
+                                                                .type,
+                                                            defaultImageFromUser:
+                                                                "dish"))),
                                                 Column(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment.start,
@@ -448,51 +523,57 @@ class _CategoryScreenState extends State<CategoryScreen> {
                                                       )
                                                     ])
                                               ],
-                                        )),
-                                            Padding(
+                                            )),
+                                        Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 10, bottom: 10, right: 15),
+                                            child: Container(
+                                                decoration: const BoxDecoration(
+                                                    color: Color.fromARGB(
+                                                        255, 228, 227, 227),
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                50.0))),
                                                 padding: const EdgeInsets.only(
-                                                    top: 10,
-                                                    bottom: 10,
-                                                    right: 15),
-                                                child: Container(
-                                                    decoration: const BoxDecoration(
-                                                        color: Color.fromARGB(
-                                                            255, 228, 227, 227),
-                                                        borderRadius:
-                                                            BorderRadius.all(
-                                                                Radius.circular(
-                                                                    50.0))),
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            top: 5,
-                                                            bottom: 5,
-                                                            left: 5,
-                                                            right: 5),
-                                                    child: Column(
-                                                      children: [
-                                                        _ActionButton(
-                                                            delete: false,
-                                                            item: catalog
-                                                                .items[index]),
-                                                        Consumer<CartModel>(
-                                                          builder: (context, cart, child) => Text(
-                                                              cart.itemCount(catalog.items[index]) != 0 ? cart.itemCount(catalog.items[index]).toString() : "0",
-                                                              style: const TextStyle(
-                                                                  fontSize: 14,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold,
-                                                                  color:
-                                                                      kPrimaryColor)),
-                                                        ),
-                                                        _ActionButton(
-                                                            delete: true,
-                                                            item: catalog
-                                                                .items[index])
-                                                      ],
-                                                    )))
-                                          ],
-                                        )))
+                                                    top: 5,
+                                                    bottom: 5,
+                                                    left: 5,
+                                                    right: 5),
+                                                child: Column(
+                                                  children: [
+                                                    _ActionButton(
+                                                        delete: false,
+                                                        item: catalog
+                                                            .items[index]),
+                                                    Consumer<CartModel>(
+                                                      builder: (context, cart, child) => Text(
+                                                          cart.itemCount(catalog
+                                                                          .items[
+                                                                      index]) !=
+                                                                  0
+                                                              ? cart
+                                                                  .itemCount(
+                                                                      catalog.items[
+                                                                          index])
+                                                                  .toString()
+                                                              : "0",
+                                                          style: const TextStyle(
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color:
+                                                                  kPrimaryColor)),
+                                                    ),
+                                                    _ActionButton(
+                                                        delete: true,
+                                                        item: catalog
+                                                            .items[index])
+                                                  ],
+                                                )))
+                                      ],
+                                    )))
                             : Container());
                   })),
               if (showSearchBar)

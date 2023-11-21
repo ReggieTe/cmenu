@@ -32,16 +32,20 @@ class _SearchScreenState extends State<SearchScreen> {
   String query = '';
   List<SearchItem> searchItems = [];
   List<SearchItem> historyItems = [];
+  List<SearchItem> trendingItems = [];
+
   List<Tag> tags = [];
   bool inProgress = false;
   String searchName = "Search results";
   String searchCount = "0";
   bool showSearchResults = false;
+  bool showTrendingItems = true;
   String searchErrorMessage = '';
 
   @override
   void initState() {
     getTags();
+    getTrendingPlaces();
     getSettings();
     super.initState();
   }
@@ -92,12 +96,14 @@ class _SearchScreenState extends State<SearchScreen> {
                       setState(() {
                         showSearchBar = false;
                         showSearchResults = false;
+                        showTrendingItems = true;
                         var history = context.read<HistoryModel>();
                         searchItems = history.items;
                       });
                     } else {
                       setState(() {
                         showSearchBar = true;
+                        showTrendingItems = false;
                       });
                     }
                   },
@@ -146,6 +152,101 @@ class _SearchScreenState extends State<SearchScreen> {
                                           ))))),
                       ],
                     )),
+                if (showTrendingItems)
+                  if (trendingItems.isNotEmpty)
+                    Padding(
+                        padding: const EdgeInsets.only(left: 10, bottom: 5),
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                 Padding(
+                        padding: const EdgeInsets.only(top:5,bottom: 5),
+                        child: Text(
+                                      "Trending Places (${trendingItems.length})",
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: kPrimaryColor,
+                                          fontFamily: 'Quicksand'))),
+                                ],
+                              ),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: [
+                                    for (var i in trendingItems)
+                                      GestureDetector(
+                                          onTap: () {
+                                            log(i.id, "place");
+                                            Navigator.push(context,
+                                                MaterialPageRoute(
+                                                    builder: (context) {
+                                              return HomeScreen(searchItem: i);
+                                            }));
+                                          },
+                                          child: Padding(
+                                              padding: const EdgeInsets.all(3),
+                                              child: Container(
+                                                  width: size.width * 0.30,
+                                                  height: size.height * 0.25,
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                          color: Color.fromARGB(
+                                                              15,
+                                                              153,
+                                                              153,
+                                                              153),
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          5.0))),
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    mainAxisSize:
+                                                        MainAxisSize.max,
+                                                    children: [
+                                                      Common.displayImage(
+                                                          images: i.images,
+                                                          imageType: 'place',
+                                                          imageHeight:
+                                                              size.height *
+                                                                  0.20,
+                                                          imageWidth:
+                                                              size.width *
+                                                                  0.30),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(left:4,top:10),
+                                                        child: Text(i.name,
+                                                            style: const TextStyle(
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                color:
+                                                                    kPrimaryColor,
+                                                                fontFamily:
+                                                                    'Quicksand'),
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis),
+                                                      )
+                                                    ],
+                                                  ))))
+                                  ],
+                                ),
+                              )
+                            ])),
                 if (showSearchBar)
                   Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -358,7 +459,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             ))),
                 if (searchItems.isEmpty)
                   SizedBox(
-                    height: size.height * 0.8,
+                    height:showTrendingItems ? size.height * 0.5 : size.height * 0.8,
                     child: Center(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -367,10 +468,11 @@ class _SearchScreenState extends State<SearchScreen> {
                         children: [
                           if (!showSearchBar)
                             SizedBox(height: size.height * 0.1),
-                          Image.asset(
-                            "assets/images/restaurant.png",
-                            height: 300,
-                          ),
+                          if (!showTrendingItems)
+                            Image.asset(
+                              "assets/images/restaurant.png",
+                              height: 300,
+                            ),
                           const SizedBox(
                             height: 10,
                           ),
@@ -394,35 +496,31 @@ class _SearchScreenState extends State<SearchScreen> {
                           ),
                           if (searchItems.isEmpty)
                             if (!showSearchBar)
-                              Expanded(
-                                  child: Align(
-                                      alignment: Alignment.bottomCenter,
-                                      child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            Padding(
-                                                padding:
-                                                    const EdgeInsets.all(50),
-                                                child: ElevatedButton(
-                                                    onPressed: () {
-                                                      setState(() {
-                                                        showSearchBar = true;
-                                                      });
-                                                    },
-                                                    child: const Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text("Get started"),
-                                                        Icon(
-                                                          Icons.search,
-                                                          color: kPrimaryColor,
-                                                        ),
-                                                      ],
-                                                    )))
-                                          ])))
+                              Align(
+                                  //alignment: Alignment.bottomCenter,
+                                  child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                    Padding(
+                                        padding: const EdgeInsets.all(50),
+                                        child: ElevatedButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                showSearchBar = true;
+                                              });
+                                            },
+                                            child: const Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text("Get started"),
+                                                Icon(
+                                                  Icons.search,
+                                                  color: kPrimaryColor,
+                                                ),
+                                              ],
+                                            )))
+                                  ]))
                         ],
                       ),
                     ),
@@ -538,6 +636,100 @@ class _SearchScreenState extends State<SearchScreen> {
       //print(error);
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("Error encounter processing setting data")));
+    }
+  }
+
+  getTrendingPlaces({String id = ''}) async {
+    try {
+      setState(() {
+        inProgress = true;
+      });
+      List<SearchItem> trendingPlaces = [];
+      String token = settings.token.isNotEmpty ? settings.token : '1234567890';
+      RequestDataModel requestModel =
+          RequestDataModel(keyword: query, id: id, token: token);
+      APIServiceList apiService = APIServiceList();
+
+      await apiService.getTrendingPlaces(requestModel).then((value) async {
+        setState(() {
+          inProgress = false;
+        });
+        if (value.error) {
+          setState(() {
+            searchErrorMessage = 'Error getting search results';
+          });
+
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Error getting search results')));
+        }
+        if (!value.error) {
+          for (var place in value.data['data']['results']) {
+            List<MenuCategory> categories = [];
+            for (var category in place['category']) {
+              if (!category['isSubCategory']) {
+                List<Product> products = [];
+                List<MenuCategory> subCategories = [];
+                for (var product in category['products']) {
+                  products.add(Product(
+                      product['id'],
+                      product['name'],
+                      sortString(product['price']),
+                      sortString(product['description']),
+                      sortString(product['discount']),
+                      processImages(product['image']),
+                      type: sortString(product['type'])));
+                }
+                //SORT SUB-CARTEGORIES
+                if (sortArray(category['categories'])) {
+                  for (var subCategory in category['categories']) {
+                    List<Product> subCategoryProducts = [];
+                    for (var product in subCategory['products']) {
+                      subCategoryProducts.add(Product(
+                          product['id'],
+                          product['name'],
+                          sortString(product['price']),
+                          sortString(product['description']),
+                          sortString(product['discount']),
+                          processImages(product['image']),
+                          type: sortString(product['type'])));
+                    }
+
+                    subCategories.add(MenuCategory(
+                        sortString(category['id']),
+                        sortString(subCategory['name']),
+                        sortString(subCategory['description']),
+                        subCategoryProducts,
+                        processImages(subCategory['image']), []));
+                  }
+                }
+                categories.add(MenuCategory(
+                    sortString(category['id']),
+                    sortString(category['name']),
+                    sortString(category['description']),
+                    products,
+                    processImages(category['image']),
+                    subCategories));
+              }
+            }
+            trendingPlaces.add(SearchItem(
+                place['id'],
+                place['name'],
+                place['address'],
+                categories,
+                processImages(place['image']),
+                sortString(place['description']),
+                sortString(place['phone']),
+                processAds(place['ads'])));
+          }
+        }
+      });
+      //}
+      setState(() {
+        trendingItems = trendingPlaces;
+      });
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Error encounter processing trending place data")));
     }
   }
 

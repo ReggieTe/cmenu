@@ -8,6 +8,11 @@ class APIServiceList {
     return processRequest(requestModel, url);
   }
 
+  Future<ResponseModel> getTrendingPlaces(RequestDataModel requestModel) async {
+    String url = "${domainURL}trending";
+    return processRequest(requestModel, url);
+  }
+
   Future<ResponseModel> download(RequestDataModel requestModel) async {
     String url = "${domainURL}download";
     return processRequest(requestModel, url);

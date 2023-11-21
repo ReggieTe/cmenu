@@ -437,7 +437,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               onTap: () {
                                 var catalog = context.read<CatalogModel>();
                                 catalog.updateItems(categories[index].products);
-                                log(widget.searchItem.id, "category");
+                                log(categories[index].id, "category");
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
                                   return CategoryScreen(
@@ -445,7 +445,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           widget.searchItem.id,
                                           widget.searchItem.name,
                                           widget.searchItem.address,
-                                          categories[index]));
+                                          categories[index]),
+                                      searchItem: widget.searchItem);
                                 }));
                               },
                             )));
@@ -551,7 +552,7 @@ class _HomeScreenState extends State<HomeScreen> {
       });
       String token = settings.token.isNotEmpty ? settings.token : '1234567890';
       RequestDataModel requestModel =
-          RequestDataModel(keyword: query, id: id, token: token);
+          RequestDataModel(keyword: id, id: id, token: token);
       APIServiceList apiService = APIServiceList();
 
       await (apiService.download(requestModel)).then((value) async {
@@ -595,12 +596,12 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         }
       }
-      if(Platform.isIOS){
+      if (Platform.isIOS) {
         if (await Permission.storage.request().isPermanentlyDenied) {
-            setState(() {
-              permissionGranted = false;
-            });
-          }
+          setState(() {
+            permissionGranted = false;
+          });
+        }
       }
       if (!permissionGranted) {
         return showDialog(
