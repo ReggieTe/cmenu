@@ -506,7 +506,8 @@ class _SearchScreenState extends State<SearchScreen> {
                                         child: ElevatedButton(
                                             onPressed: () {
                                               setState(() {
-                                                showSearchBar = true;
+                                                showSearchBar = true;                                                
+                                                showTrendingItems = false;
                                               });
                                             },
                                             child: const Row(

@@ -3,6 +3,7 @@ import 'package:cmenu/Components/Class/image.dart' as local_image;
 import 'package:flutter/material.dart';
 import 'package:image_fade/image_fade.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:shimmer/shimmer.dart';
 
 class Common {
   static Future<bool> checkInternetConnection(
@@ -39,7 +40,13 @@ class Common {
                 fit: BoxFit.fitWidth,
                 placeholder: Image.asset(defaultImage),
                 loadingBuilder: (context, progress, chunkEvent) =>
-                    CircularProgressIndicator(value: progress),
+                    Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.white,
+                    child: Container(
+                      color: Colors.grey,
+                    ),
+                  ),
                 errorBuilder: (context, error) => Image.asset(
                   defaultImage,
                   fit: BoxFit.cover,
@@ -59,10 +66,13 @@ class Common {
             fit: BoxFit.cover,
             placeholder: Image.asset(defaultImage),
             loadingBuilder: (context, progress, chunkEvent) {
-              return CircularProgressIndicator(
-                value: progress,
-                strokeWidth: 1.0,
-              );
+              return Shimmer.fromColors(
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.white,
+                    child: Container(
+                      color: Colors.grey,
+                    ),
+                  );
             },
             errorBuilder: (context, error) => Image.asset(defaultImage),
           )),
