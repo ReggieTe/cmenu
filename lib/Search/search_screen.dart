@@ -182,7 +182,13 @@ class _SearchScreenState extends State<SearchScreen> {
                                     for (var i in trendingItems)
                                       GestureDetector(
                                           onTap: () {
-                                            log(i.id, "place");
+                                            var cart = context.read<CartModel>();
+                                            cart.removeAll();
+                                            var history = context.read<HistoryModel>();
+                                            if (!history.items.contains(i)) {
+                                              history.add(i);
+                                              log(i.id, 'place');
+                                            }
                                             Navigator.push(context,
                                                 MaterialPageRoute(
                                                     builder: (context) {
@@ -430,7 +436,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 style: const TextStyle(
                                     overflow: TextOverflow.ellipsis),
                               ),
-                              trailing: GestureDetector(
+                              trailing:!showSearchResults&&!showSearchBar? GestureDetector(
                                 child: Image.asset(
                                   "assets/images/bin.png",
                                   height: 25,
@@ -442,7 +448,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                     searchItems.remove(item);
                                   });
                                 },
-                              ),
+                              ):null,
                               onTap: () {
                                 var cart = context.read<CartModel>();
                                 cart.removeAll();
