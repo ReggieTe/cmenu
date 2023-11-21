@@ -574,7 +574,9 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       });
     } catch (error) {
-      //print(error);
+      setState(() {
+          inProgress = false;
+        });
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("Error encounter processing menu download")));
     }

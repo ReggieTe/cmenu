@@ -576,6 +576,9 @@ class _SearchScreenState extends State<SearchScreen> {
       });
     } catch (error) {
       //print(error);
+      setState(() {
+          inProgress = false;
+        });
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Error encounter processing tag data")));
     }
@@ -635,6 +638,9 @@ class _SearchScreenState extends State<SearchScreen> {
       });
     } catch (error) {
       //print(error);
+      setState(() {
+          inProgress = false;
+        });
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("Error encounter processing setting data")));
     }
@@ -729,6 +735,9 @@ class _SearchScreenState extends State<SearchScreen> {
         trendingItems = trendingPlaces;
       });
     } catch (error) {
+      setState(() {
+          inProgress = false;
+        });
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("Error encounter processing trending place data")));
     }
@@ -831,6 +840,9 @@ class _SearchScreenState extends State<SearchScreen> {
         }
       });
     } catch (error) {
+      setState(() {
+          inProgress = false;
+        });
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("Error encounter processing search data")));
     }
