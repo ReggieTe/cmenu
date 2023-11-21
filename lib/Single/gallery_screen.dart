@@ -125,10 +125,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
           ),
         ],
       ),
-      body:Stack(children: [
-        Align(
-            alignment: Alignment.topCenter,
-            child: SingleChildScrollView(
+      body:SingleChildScrollView(
                 child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
@@ -154,10 +151,8 @@ class _GalleryScreenState extends State<GalleryScreen> {
                     images: imageToDisplay,
                     imageType: 'ad',
                     imageHeight: size.height * 0.6,
-                    imageWidth: size.width))])]))),
-                Align(
-            alignment: Alignment.bottomCenter,
-            child:Column(
+                    imageWidth: size.width))]),
+               Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 SingleChildScrollView(
@@ -181,8 +176,8 @@ class _GalleryScreenState extends State<GalleryScreen> {
                                     imageWidth: size.width * 0.30),
                               ))
                       ],
-                    ))]))
+                    ))])
               ]),
-            );
+            ));
   }
 }
