@@ -1,20 +1,15 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:cmenu/Cart/cart_screen.dart';
 import 'package:cmenu/Components/Class/menu_category.dart';
 import 'package:cmenu/Components/Class/search_item.dart';
-import 'package:cmenu/Components/Model/cart.dart';
 import 'package:cmenu/Components/Utils/common.dart';
 import 'package:cmenu/Components/Utils/setting_preferences.dart';
 import 'package:cmenu/Components/progress_loader.dart';
 import 'package:cmenu/Components/Class/image.dart' as local_image;
-import 'package:cmenu/Single/place_screen.dart';
+import 'package:cmenu/Home/welcome_screen.dart';
 import 'package:cmenu/constants.dart';
-import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:provider/provider.dart';
 
 class GalleryScreen extends StatefulWidget {
   final SearchItem searchItem;
@@ -41,12 +36,13 @@ class _GalleryScreenState extends State<GalleryScreen> {
   String downloadingStr = "No data";
   double download = 0;
   List<local_image.Image> imageToDisplay = [];
-
+  List<local_image.Image> images = [];
   bool showPromotions = true;
 
   @override
   void initState() {
-    var image = widget.images.first;
+    images = widget.images;
+    var image = images.first;
     setState(() {
       imageToDisplay.add(image);
     });
@@ -91,7 +87,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
         title: GestureDetector(
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return PlaceScreen(searchItem: widget.searchItem);
+                return HomeScreen(searchItem: widget.searchItem);
               }));
             },
             child: Text(
@@ -102,31 +98,9 @@ class _GalleryScreenState extends State<GalleryScreen> {
                   fontFamily: 'Quicksand',
                   overflow: TextOverflow.ellipsis),
             )),
-        actions: <Widget>[
-          Consumer<CartModel>(
-            builder: (context, cart, child) => Padding(
-                padding: const EdgeInsets.only(right: 15),
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return const MyCart();
-                    }));
-                  },
-                  child: (cart.items.isNotEmpty)
-                      ? badges.Badge(
-                          badgeContent: Text(cart.items.length.toString(),
-                              style: const TextStyle(color: Colors.white)),
-                          child: const Icon(FontAwesomeIcons.list,
-                              color: kPrimaryColor),
-                        )
-                      : const Icon(FontAwesomeIcons.list),
-                )),
-          ),
-        ],
       ),
-      body:SingleChildScrollView(
-                child: Column(
+      body: SingleChildScrollView(
+        child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               if (_bannerAd != null)
@@ -139,27 +113,21 @@ class _GalleryScreenState extends State<GalleryScreen> {
                   ),
                 ),
               Column(children: [
-                Text(
-                  widget.searchItem.address,
-                  style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.black,
-                      overflow: TextOverflow.fade),
-                ),
-                Padding(padding: const EdgeInsets.all(5),child:
-                Common.displayImage(
-                    images: imageToDisplay,
-                    imageType: 'ad',
-                    imageHeight: size.height * 0.6,
-                    imageWidth: size.width))]),
-               Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
+                Padding(
+                    padding: const EdgeInsets.all(5),
+                    child: Common.displayImage(
+                        images: imageToDisplay,
+                        imageType: 'ad',
+                        imageHeight: size.height * 0.6,
+                        imageWidth: size.width))
+              ]),
+              if(images.length>1)
+              Column(mainAxisAlignment: MainAxisAlignment.end, children: [
                 SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        for (var i in widget.images)
+                        for (var i in images)
                           GestureDetector(
                               onTap: () {
                                 setState(() {
@@ -172,12 +140,38 @@ class _GalleryScreenState extends State<GalleryScreen> {
                                 child: Common.displayImage(
                                     images: [i],
                                     imageType: 'ad',
-                                    imageHeight: size.height * 0.20,
-                                    imageWidth: size.width * 0.30),
+                                    imageHeight: size.height * 0.10,
+                                    imageWidth: size.width * 0.15),
                               ))
                       ],
-                    ))])
-              ]),
-            ));
+                    ))
+              ])
+            ]),
+      ),
+      bottomNavigationBar:
+          SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  for (var i in widget.searchItem.ads)
+                    GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            images = i.images;
+                            imageToDisplay.clear();
+                            imageToDisplay.add(i.images.first);
+                          });
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(5),
+                          child: Common.displayImage(
+                              images: i.images,
+                              imageType: 'ad',
+                              imageHeight: size.height * 0.10,
+                              imageWidth: size.width * 0.15),
+                        ))
+                ],
+              )),
+    );
   }
 }

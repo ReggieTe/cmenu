@@ -2,6 +2,7 @@ import 'package:cmenu/Components/Api/api.service.list.dart';
 import 'package:cmenu/Components/Class/ad.dart';
 import 'package:cmenu/Components/Class/image.dart' as local_image;
 import 'package:cmenu/Components/Class/menu_category.dart';
+import 'package:cmenu/Components/Class/open_time.dart';
 import 'package:cmenu/Components/Class/product.dart';
 import 'package:cmenu/Components/Class/response.dart';
 import 'package:cmenu/Components/Class/search_item.dart';
@@ -12,6 +13,7 @@ import 'package:cmenu/Components/Utils/common.dart';
 import 'package:cmenu/Components/Utils/setting_preferences.dart';
 import 'package:cmenu/Components/progress_loader.dart';
 import 'package:cmenu/Home/welcome_screen.dart';
+import 'package:cmenu/InformationCenter/information_center.dart';
 import 'package:cmenu/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -73,7 +75,15 @@ class _SearchScreenState extends State<SearchScreen> {
         },
         child: Scaffold(
             appBar: AppBar(
-              automaticallyImplyLeading: false,
+              leading: GestureDetector(
+            onTap: () {
+              
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return const InformationCenterScreen();
+                                }));
+            },
+            child: const Icon(Icons.list_rounded, color: kPrimaryColor)),
               centerTitle: true,
               elevation: 0,
               title: const Text(
@@ -92,20 +102,19 @@ class _SearchScreenState extends State<SearchScreen> {
                         )
                       : const Icon(Icons.search, color: kPrimaryColor),
                   onPressed: () {
-                    if (showSearchBar) {
-                      setState(() {
+                   
+                      setState(() { 
+                        if (showSearchBar) {                      
                         showSearchBar = false;
                         showSearchResults = false;
                         showTrendingItems = true;
                         var history = context.read<HistoryModel>();
                         searchItems = history.items;
-                      });
                     } else {
-                      setState(() {
                         showSearchBar = true;
                         showTrendingItems = false;
-                      });
                     }
+                      });
                   },
                 ),
               ],
@@ -153,28 +162,43 @@ class _SearchScreenState extends State<SearchScreen> {
                       ],
                     )),
                 if (showTrendingItems)
-                  if (trendingItems.isNotEmpty)
+                    if (trendingItems.isNotEmpty)
                     Padding(
                         padding: const EdgeInsets.only(left: 10, bottom: 5),
                         child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.max,
                             children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                 Padding(
-                        padding: const EdgeInsets.only(top:5,bottom: 5),
-                        child: Text(
-                                      "Trending Places (${trendingItems.length})",
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: kPrimaryColor,
-                                          fontFamily: 'Quicksand'))),
-                                ],
-                              ),
+                                  const Padding(
+                                      padding: EdgeInsets.all(5),
+                                      child:
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                       Text(
+                                          "Trending Places",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                              color: kPrimaryColor,
+                                              fontSize: 16)),
+
+                                        // GestureDetector(
+                                        //   child:const Text(
+                                        //   "More",
+                                        //   style: TextStyle(
+                                        //       color: Colors.blue,
+                                        //       fontSize: 14,)) ,
+                                        //       onTap:(){
+                                        //       log("", 'discover');                                               
+                                        //     Navigator.push(context,
+                                        //         MaterialPageRoute(
+                                        //             builder: (context) {
+                                        //       return DiscoverScreen(trendingItems: trendingItems);
+                                        //     }));
+
+                                        //       }
+                                        // )
+
+
+                                      ],)),
                               SingleChildScrollView(
                                 scrollDirection: Axis.horizontal,
                                 child: Row(
@@ -182,13 +206,15 @@ class _SearchScreenState extends State<SearchScreen> {
                                     for (var i in trendingItems)
                                       GestureDetector(
                                           onTap: () {
-                                            var cart = context.read<CartModel>();
+                                            var cart =
+                                                context.read<CartModel>();
                                             cart.removeAll();
-                                            var history = context.read<HistoryModel>();
+                                            var history =
+                                                context.read<HistoryModel>();
                                             if (!history.items.contains(i)) {
                                               history.add(i);
                                               log(i.id, 'place');
-                                            }
+                                               }
                                             Navigator.push(context,
                                                 MaterialPageRoute(
                                                     builder: (context) {
@@ -230,7 +256,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                                       Padding(
                                                         padding:
                                                             const EdgeInsets
-                                                                .only(left:4,top:10),
+                                                                    .only(
+                                                                left: 4,
+                                                                top: 10),
                                                         child: Text(i.name,
                                                             style: const TextStyle(
                                                                 overflow:
@@ -343,8 +371,10 @@ class _SearchScreenState extends State<SearchScreen> {
                       children: [
                         Text(
                           searchName,
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
+                          style: const TextStyle(                              
+                                              fontWeight: FontWeight.w500,
+                                              color: kPrimaryColor,
+                                              fontSize: 16),
                         ),
                         Container(
                             decoration: const BoxDecoration(
@@ -382,15 +412,15 @@ class _SearchScreenState extends State<SearchScreen> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       const Text("History",
-                                          style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w600)),
+                                          style: TextStyle(                                              
+                                              fontWeight: FontWeight.w500,
+                                              color: kPrimaryColor,
+                                              fontSize: 16)),
                                       GestureDetector(
                                         child: const Text("Clear all",
                                             style: TextStyle(
-                                                fontSize: 16,
-                                                color: kPrimaryColor,
-                                                fontWeight: FontWeight.bold)),
+                                                fontSize: 14,
+                                                color: kPrimaryColor)),
                                         onTap: () {
                                           setState(() {
                                             inProgress = true;
@@ -421,34 +451,38 @@ class _SearchScreenState extends State<SearchScreen> {
                                     BorderRadius.all(Radius.circular(5.0))),
                             padding: const EdgeInsets.only(top: 0, bottom: 0),
                             child: ListTile(
-                              leading: Common.displayImage(
+                              leading:item.images.isNotEmpty? Common.displayImage(
                                   images: item.images,
                                   imageType: 'place',
                                   imageHeight: 60,
-                                  imageWidth: 60),
+                                  imageWidth: 60):null,
                               title: Text(
                                 item.name,
                                 style: const TextStyle(
-                                    overflow: TextOverflow.ellipsis),
+                                    overflow: TextOverflow.ellipsis,fontSize: 16,
+                                                  fontWeight: FontWeight.w500),
                               ),
                               subtitle: Text(
                                 item.address,
                                 style: const TextStyle(
                                     overflow: TextOverflow.ellipsis),
                               ),
-                              trailing:!showSearchResults&&!showSearchBar? GestureDetector(
-                                child: Image.asset(
-                                  "assets/images/bin.png",
-                                  height: 25,
-                                ),
-                                onTap: () {
-                                  var history = context.read<HistoryModel>();
-                                  history.delete(item);
-                                  setState(() {
-                                    searchItems.remove(item);
-                                  });
-                                },
-                              ):null,
+                              trailing: !showSearchResults && !showSearchBar
+                                  ? GestureDetector(
+                                      child: const Icon(
+                                          Icons.delete_outline_outlined,
+                                          color: Colors.red,
+                                        ),
+                                      onTap: () {
+                                        var history =
+                                            context.read<HistoryModel>();
+                                        history.delete(item);
+                                        setState(() {
+                                          searchItems.remove(item);
+                                        });
+                                      },
+                                    )
+                                  : null,
                               onTap: () {
                                 var cart = context.read<CartModel>();
                                 cart.removeAll();
@@ -464,76 +498,122 @@ class _SearchScreenState extends State<SearchScreen> {
                               },
                             ))),
                 if (searchItems.isEmpty)
-                  SizedBox(
-                    height:showTrendingItems ? size.height * 0.5 : size.height * 0.8,
-                    child: Center(
+                   Center(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         mainAxisSize: MainAxisSize.max,
-                        children: [
-                          if (!showSearchBar)
-                            SizedBox(height: size.height * 0.1),
-                          if (!showTrendingItems)
-                            Image.asset(
-                              "assets/images/restaurant.png",
-                              height: 300,
-                            ),
-                          const SizedBox(
-                            height: 10,
+                        children: [ SizedBox(
+                            height: size.height*0.01,
                           ),
-                          const Text(
-                            "cMenu is a Menu App ",
+                            Container(
+                                width: size.width*0.98,
+                              decoration: const BoxDecoration(
+                                color: kPrimaryLightColor,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10.0))),
+                              padding: const EdgeInsets.only(top: 5, bottom: 5),
+                              child: const Padding(padding: EdgeInsets.all(10),
+                              child:
+                               Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                              Text(
+                            "Menu App",
                             style: TextStyle(
                                 fontSize: 25,
                                 fontWeight: FontWeight.bold,
                                 color: kPrimaryColor,
-                                fontFamily: 'Quicksand'),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          const Text(
-                            "For different eateries in & around Cape Town",
+                                fontFamily: 'Quicksand'), 
+                              ),
+                            Text(
+                            "Menu app for restaurants,clubs and coffee shops in and around Cape Town",
                             style: TextStyle(
-                                fontSize: 16,
-                                fontFamily: 'Quicksand',
-                                color: kPrimaryColor),
+                                fontSize: 14,
+                                color: kPrimaryColor,),
+                          )
+                              ],),
+                                        
+                             ),
+                            ),
+                              
+                          SizedBox(
+                            height: size.height*0.01,
                           ),
-                          if (searchItems.isEmpty)
-                            if (!showSearchBar)
-                              Align(
-                                  //alignment: Alignment.bottomCenter,
-                                  child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                    Padding(
-                                        padding: const EdgeInsets.all(50),
+                           Image.asset(
+                              "assets/images/table-mountain.png",
+                              height: size.width*0.9,
+                            ),
+                              
+                          SizedBox(
+                            height: size.height*0.01,
+                          ),
+                              Container(
+                                width: size.width*0.98,
+                              decoration: const BoxDecoration(
+                                color: kPrimaryColor,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10.0))),
+                              padding: const EdgeInsets.only(top: 5, bottom: 5),
+                              child: const Padding(padding: EdgeInsets.all(10),
+                              child:
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                              Text(
+                            "Can't find your favorite place ?",
+                            style: TextStyle(
+                                fontSize: 25,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontFamily: 'Quicksand'),                         
+
+
+                              ),
+                            Text(
+                            "Let us know on our social handles so that we include it on the list of awesome places in Cape Town ",
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white,),
+                          )
+                              ],))),
+
+                          SizedBox(
+                            height: size.height*0.01,
+                          ),
+                        ],
+                      ),
+                    ),
+              ])),
+            ),bottomNavigationBar:(searchItems.isEmpty)&&
+                             (!showSearchBar)? Padding(
+                                        padding: const EdgeInsets.all(10),
                                         child: ElevatedButton(
                                             onPressed: () {
                                               setState(() {
-                                                showSearchBar = true;                                                
+                                                showSearchBar = true;
                                                 showTrendingItems = false;
                                               });
                                             },
-                                            child: const Row(
+                                            child:const Padding(padding: EdgeInsets.all(15)
+                                        ,child: Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.center,
                                               children: [
-                                                Text("Get started"),
+                                                Text("Get started",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18,
+                                                    color: kPrimaryColor,
+                                                    fontFamily: 'Quicksand'),),
                                                 Icon(
                                                   Icons.search,
                                                   color: kPrimaryColor,
                                                 ),
                                               ],
-                                            )))
-                                  ]))
-                        ],
-                      ),
-                    ),
-                  ),
-              ])),
-            )));
+                                            )))):null,));
   }
 
   log(String id, String section) async {
@@ -583,8 +663,8 @@ class _SearchScreenState extends State<SearchScreen> {
     } catch (error) {
       //print(error);
       setState(() {
-          inProgress = false;
-        });
+        inProgress = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Error encounter processing tag data")));
     }
@@ -645,8 +725,8 @@ class _SearchScreenState extends State<SearchScreen> {
     } catch (error) {
       //print(error);
       setState(() {
-          inProgress = false;
-        });
+        inProgress = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("Error encounter processing setting data")));
     }
@@ -732,7 +812,9 @@ class _SearchScreenState extends State<SearchScreen> {
                 processImages(place['image']),
                 sortString(place['description']),
                 sortString(place['phone']),
-                processAds(place['ads'])));
+                processAds(place['ads']),
+                processDays([]),
+                ));
           }
         }
       });
@@ -742,8 +824,8 @@ class _SearchScreenState extends State<SearchScreen> {
       });
     } catch (error) {
       setState(() {
-          inProgress = false;
-        });
+        inProgress = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("Error encounter processing trending place data")));
     }
@@ -832,7 +914,8 @@ class _SearchScreenState extends State<SearchScreen> {
                 processImages(place['image']),
                 sortString(place['description']),
                 sortString(place['phone']),
-                processAds(place['ads'])));
+                processAds(place['ads']),
+                processDays([]),));
           }
         }
       });
@@ -847,8 +930,8 @@ class _SearchScreenState extends State<SearchScreen> {
       });
     } catch (error) {
       setState(() {
-          inProgress = false;
-        });
+        inProgress = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("Error encounter processing search data")));
     }
@@ -863,6 +946,22 @@ class _SearchScreenState extends State<SearchScreen> {
       }
     }
     return productImages;
+  }
+
+  List<OpenTime> processDays(var daysList) {
+    List<OpenTime> days = [];
+    for (var element in daysList) {
+      days.add(OpenTime(element['day'].toString(),element['time'].toString()));
+    }
+    days.add(OpenTime("Monday","8:00am - 5:00pm"));
+    days.add(OpenTime("Tueday","8:00am - 5:00pm"));
+    days.add(OpenTime("Wednesday","8:00am - 5:00pm"));
+    days.add(OpenTime("Thursday","8:00am - 5:00pm"));
+    days.add(OpenTime("Friday","8:00am - 5:00pm"));
+    days.add(OpenTime("Saturday","8:00am - 5:00pm"));
+    days.add(OpenTime("Sunday","8:00am - 5:00pm"));
+
+    return days;
   }
 
   List<Ad> processAds(var adList) {

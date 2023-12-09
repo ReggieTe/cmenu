@@ -12,7 +12,7 @@ class Common {
     return await InternetConnectionChecker().hasConnection;
   }
 
-  static bool isValidName(String name){
+  static bool isValidName(String name) {
     final nameRegExp = RegExp(r"^\s*([A-Za-z ]{1,})$");
     return nameRegExp.hasMatch(name);
   }
@@ -23,38 +23,39 @@ class Common {
       bool displayMultiple = false,
       double imageHeight = 128,
       double imageWidth = 128,
-      String defaultImageFromUser = "menu"}) {
+      String defaultImageFromUser = "menu",
+      bool noDefaultImage = false}) {
     String defaultImage = "assets/images/$defaultImageFromUser.png";
     if (images.isNotEmpty) {
       if (displayMultiple) {
         return SizedBox(
-                height:imageHeight ,
-                width: imageWidth,
-                child:CarouselSlider(
-          options: CarouselOptions(height: imageHeight),
-          items: images.map((i) {
-            return Builder(builder: (BuildContext context) {
-              return ImageFade(
-                image: NetworkImage(i.file),
-                height:imageHeight ,
-                fit: BoxFit.fitWidth,
-                placeholder: Image.asset(defaultImage),
-                loadingBuilder: (context, progress, chunkEvent) =>
-                    Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.white,
-                    child: Container(
-                      color: Colors.grey,
+            height: imageHeight,
+            width: imageWidth,
+            child: CarouselSlider(
+              options: CarouselOptions(height: imageHeight),
+              items: images.map((i) {
+                return Builder(builder: (BuildContext context) {
+                  return ImageFade(
+                    image: NetworkImage(i.file),
+                    height: imageHeight,
+                    fit: BoxFit.fill,
+                    placeholder: Image.asset(defaultImage),
+                    loadingBuilder: (context, progress, chunkEvent) =>
+                        Shimmer.fromColors(
+                      baseColor: Colors.grey[300]!,
+                      highlightColor: Colors.white,
+                      child: Container(
+                        color: Colors.grey,
+                      ),
                     ),
-                  ),
-                errorBuilder: (context, error) => Image.asset(
-                  defaultImage,
-                  fit: BoxFit.cover,
-                ),
-              );
-            });
-          }).toList(),
-        ));
+                    errorBuilder: (context, error) => Image.asset(
+                      defaultImage,
+                      fit: BoxFit.cover,
+                    ),
+                  );
+                });
+              }).toList(),
+            ));
       } else {
         return ClipRRect(
           borderRadius: BorderRadius.circular(5),
@@ -67,12 +68,12 @@ class Common {
             placeholder: Image.asset(defaultImage),
             loadingBuilder: (context, progress, chunkEvent) {
               return Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.white,
-                    child: Container(
-                      color: Colors.grey,
-                    ),
-                  );
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.white,
+                child: Container(
+                  color: Colors.grey,
+                ),
+              );
             },
             errorBuilder: (context, error) => Image.asset(defaultImage),
           )),
@@ -118,13 +119,17 @@ class Common {
         default:
       }
 
-      return SizedBox(
-          height: imageHeight,
-          width: imageWidth,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(5),
-            child: Image.asset(imageToDisplay),
-          ));
+      if (noDefaultImage) {
+        return Container();
+      } else {
+        return SizedBox(
+            height: imageHeight,
+            width: imageWidth,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(5),
+              child: Image.asset(imageToDisplay),
+            ));
+      }
     }
   }
 }

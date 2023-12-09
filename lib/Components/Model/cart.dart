@@ -22,8 +22,9 @@ class CartModel extends ChangeNotifier {
   }
 
   /// List of items in the cart.
-  List<Product> get items =>
-      _itemIds.map((id) => _catalog.getById(id)).toList();
+  List<Product> get items {
+    return _itemIds.map((id)=> _catalog.getById(id)).toList();
+  }
 
   /// The current total price of all items.
   double get totalPrice =>

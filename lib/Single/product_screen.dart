@@ -1,27 +1,22 @@
 import 'package:cmenu/Cart/cart_screen.dart';
 import 'package:cmenu/Components/Api/api.service.list.dart';
-import 'package:cmenu/Components/Class/category_item.dart';
 import 'package:cmenu/Components/Class/product.dart';
 import 'package:cmenu/Components/Class/response.dart';
-import 'package:cmenu/Components/Class/search_item.dart';
 import 'package:cmenu/Components/Model/cart.dart';
 import 'package:cmenu/Components/Utils/common.dart';
 import 'package:cmenu/Components/Utils/setting_preferences.dart';
-import 'package:cmenu/Single/gallery_screen.dart';
 import 'package:cmenu/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:badges/badges.dart' as badges;
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 
 class ProductScreen extends StatefulWidget {
+  final String categoryName;
   final Product product;
-  final CategoryItem categoryItem;
-  final SearchItem searchItem;
 
   const ProductScreen(
-      {super.key, required this.product, required this.categoryItem, required this.searchItem});
+      {super.key, required this.product, required this.categoryName});
 
   @override
   State<ProductScreen> createState() => _ProductScreenState();
@@ -31,14 +26,18 @@ class _ProductScreenState extends State<ProductScreen> {
   double totalBudget = 0.0;
   BannerAd? _bannerAd;
   List<Product> products = [];
+  int itemQuantity = 0;
   bool showPromotions = true;
   var settings = SettingPreferences.getSetting();
 
   @override
   void initState() {
     setState(() {
+      var cart = context.read<CartModel>();
+      itemQuantity = cart.itemCount(widget.product);
       totalBudget = settings.budget;
     });
+
     super.initState();
     BannerAd(
       adUnitId: bannerAndroid,
@@ -71,13 +70,18 @@ class _ProductScreenState extends State<ProductScreen> {
       appBar: AppBar(
         centerTitle: true,
         elevation: 0,
+        leading: GestureDetector(
+            onTap: () {
+              Navigator.pop(context, true);
+            },
+            child: const Icon(Icons.arrow_back, color: kPrimaryColor)),
         title: Text(
-          widget.categoryItem.name,
+          widget.categoryName,
           style: const TextStyle(
+              fontFamily: 'Quicksand',
               fontWeight: FontWeight.bold,
               overflow: TextOverflow.ellipsis,
-              color: kPrimaryColor,
-              fontFamily: 'Quicksand'),
+              color: kPrimaryColor),
         ),
         actions: [
           Consumer<CartModel>(
@@ -94,321 +98,301 @@ class _ProductScreenState extends State<ProductScreen> {
                       ? badges.Badge(
                           badgeContent: Text(cart.items.length.toString(),
                               style: const TextStyle(color: Colors.white)),
-                          child: const Icon(FontAwesomeIcons.list,
+                          child: const Icon(Icons.shopping_bag,
                               color: kPrimaryColor),
                         )
-                      : const Icon(FontAwesomeIcons.list),
+                      : const Icon(Icons.shopping_bag, color: kPrimaryColor),
                 )),
           ),
         ],
       ),
       body: Stack(children: [
-        
         Align(
             alignment: Alignment.topCenter,
             child: SingleChildScrollView(
                 child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                if (_bannerAd != null)
-                  Align(
-                    alignment: Alignment.topCenter,
-                    child: SizedBox(
-                      width: _bannerAd!.size.width.toDouble(),
-                      height: _bannerAd!.size.height.toDouble(),
-                      child: AdWidget(ad: _bannerAd!),
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                  if (_bannerAd != null)
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: SizedBox(
+                        width: _bannerAd!.size.width.toDouble(),
+                        height: _bannerAd!.size.height.toDouble(),
+                        child: AdWidget(ad: _bannerAd!),
+                      ),
                     ),
-                  ),
-                Text(
-                  widget.categoryItem.address,
-                  style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.black,
-                      overflow: TextOverflow.fade),
-                ),
-                GestureDetector(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text("Set Budget",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  overflow: TextOverflow.ellipsis,
-                                  fontSize: 20,
-                                )),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 16),
-                                  child: TextFormField(
-                                    keyboardType: TextInputType.number,
-                                    decoration: const InputDecoration(
-                                      border: UnderlineInputBorder(),
-                                      labelText: 'Enter amount',
-                                    ),
-                                    onChanged: (value) {
-                                      var setting = settings.copy(
-                                          budget: double.parse(value));
-                                      SettingPreferences.setSetting(setting);
-                                      setState(() {
-                                        totalBudget = double.parse(value);
-                                      });
-                                    },
-                                  ),
-                                ),
-                                const Text(
-                                  'This is the total amount you want to spend',
+                  GestureDetector(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text("Set Budget",
+                                  textAlign: TextAlign.center,
                                   style: TextStyle(
-                                      fontSize: 12, color: Colors.grey),
-                                ),
-                              ],
-                            ),
-                            actions: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                    overflow: TextOverflow.ellipsis,
+                                    fontSize: 20,
+                                  )),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop(false);
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 16),
+                                    child: TextFormField(
+                                      keyboardType: TextInputType.number,
+                                      decoration: const InputDecoration(
+                                        border: UnderlineInputBorder(),
+                                        labelText: 'Enter amount',
+                                      ),
+                                      onChanged: (value) {
+                                        var setting = settings.copy(
+                                            budget: double.parse(value));
+                                        SettingPreferences.setSetting(setting);
+                                        setState(() {
+                                          totalBudget = double.parse(value);
+                                        });
                                       },
-                                      child: const Text('Cancel')),
-                                  TextButton(
-                                      onPressed: () {
-                                        setState(() {});
-                                        Navigator.of(context).pop(false);
-                                      },
-                                      child: const Text('Save'))
+                                    ),
+                                  ),
+                                  const Text(
+                                    'This is the total amount you want to spend',
+                                    style: TextStyle(
+                                        fontSize: 12, color: Colors.grey),
+                                  ),
                                 ],
-                              )
-                            ],
-                          );
-                        },
-                      );
-                    },
-                    child: Padding(
-                        padding: const EdgeInsets.all(5),
-                        child: Container(
-                            decoration: const BoxDecoration(
-                                color: kPrimaryLightColor,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(5.0))),
-                            padding: const EdgeInsets.only(top: 0, bottom: 0),
-                            child: Padding(
-                                padding: const EdgeInsets.all(5),
-                                child: Row(
+                              ),
+                              actions: [
+                                Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    const Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text("Remaining Budget",
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w600)),
-                                        Text("Total cost of items on your list",
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                            )),
-                                      ],
-                                    ),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Consumer<CartModel>(
-                                          builder: (context, cart, child) => Text(
-                                              "$currencyCode ${cart.remainingBudget(totalBudget, cart.totalPrice)}",
-                                              style: const TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: kPrimaryColor)),
-                                        ),
-                                        Consumer<CartModel>(
-                                          builder: (context, cart, child) => Text(
-                                              "$currencyCode ${cart.totalPrice}",
-                                              style: const TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: kPrimaryColor)),
-                                        )
-                                      ],
-                                    ),
+                                    TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop(false);
+                                        },
+                                        child: const Text('Cancel')),
+                                    TextButton(
+                                        onPressed: () {
+                                          setState(() {});
+                                          Navigator.of(context).pop(false);
+                                        },
+                                        child: const Text('Save'))
                                   ],
-                                ))))),
-                               if (widget.searchItem.ads.isNotEmpty)
+                                )
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: Padding(
+                          padding: const EdgeInsets.all(5),
+                          child: Container(
+                              decoration: const BoxDecoration(
+                                  color: kPrimaryLightColor,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(5.0))),
+                              padding: const EdgeInsets.only(top: 0, bottom: 0),
+                              child: Padding(
+                                  padding: const EdgeInsets.all(5),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text("Budget",
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w600)),
+                                          Text(
+                                              "Total cost of items in your bag",
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                              )),
+                                        ],
+                                      ),
+                                      Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Consumer<CartModel>(
+                                            builder: (context, cart, child) => Text(
+                                                "$currencyCode ${cart.remainingBudget(totalBudget, cart.totalPrice)}",
+                                                style: const TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: kPrimaryColor)),
+                                          ),
+                                          Consumer<CartModel>(
+                                            builder: (context, cart, child) => Text(
+                                                "$currencyCode ${cart.totalPrice}",
+                                                style: const TextStyle(
+                                                    fontSize: 16,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: kPrimaryColor)),
+                                          )
+                                        ],
+                                      ),
+                                    ],
+                                  ))))),
                   Padding(
-                      padding: const EdgeInsets.all(5),
+                      padding: const EdgeInsets.only(left: 5, top: 5),
                       child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.max,
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                    "Promotions (${widget.searchItem.ads.length})",
-                                    style: const TextStyle(fontSize: 16)),
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      showPromotions =
-                                          showPromotions ? false : true;
-                                    });
-                                  },
-                                  child: Text(
-                                    showPromotions ? "Hide" : "View",
-                                    style: TextStyle(
-                                        color: showPromotions
-                                            ? Colors.red
-                                            : kPrimaryColor),
-                                  ),
-                                )
-                              ],
-                            ),
-                            if (showPromotions)
-                              SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: [
-                                    for (var i in widget.searchItem.ads)
-                                      GestureDetector(
-                                          onTap: () {
-                                            log(i.id, "ad");
-                                            Navigator.push(context,
-                                                MaterialPageRoute(
-                                                    builder: (context) {
-                                              return GalleryScreen(
-                                                  searchItem: widget.searchItem,
-                                                  images: i.images);
-                                            }));
-                                          },
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(5),
-                                            child: Common.displayImage(
-                                                images: i.images,
-                                                imageType: 'ad',
-                                                imageHeight: size.height * 0.20,
-                                                imageWidth: size.width * 0.30),
-                                          ))
-                                  ],
-                                ),
-                              )
-                          ])),
-             
-                Padding(
-                    padding: const EdgeInsets.only(left: 5, top: 5),
-                    child: Column(mainAxisSize: MainAxisSize.min, children: [
-                      Padding(
-                          padding: const EdgeInsets.all(0),
-                          child: Column(children: [
                             Padding(
-                                padding: const EdgeInsets.only(
-                                  bottom: 10,
+                                padding: const EdgeInsets.all(0),
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                          padding: const EdgeInsets.only(
+                                            bottom: 10,
+                                          ),
+                                          child: Common.displayImage(
+                                              images: widget.product.images,
+                                              displayMultiple: true,
+                                              imageWidth: size.width,
+                                              imageHeight: size.height * 0.4,
+                                              imageType: widget.product.type)),
+                                      Text(widget.product.name,
+                                          style: const TextStyle(
+                                            color: kPrimaryColor,
+                                            fontSize: 30,
+                                            fontFamily: 'Quicksand',
+                                            fontWeight: FontWeight.w600,
+                                          )),
+                                    ])),
+                            if (widget.product.description.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: Text(
+                                  widget.product.description,
+                                  style: const TextStyle(fontSize: 14),
                                 ),
-                                child: Common.displayImage(
-                                    images: widget.product.images,
-                                    displayMultiple: true,
-                                    imageWidth: size.width,
-                                    imageHeight: size.height * 0.4,
-                                    imageType: 'food')),
-                            Text(widget.product.name,
-                                style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w600,
-                                    overflow: TextOverflow.ellipsis)),
+                              ),
+                            Consumer<CartModel>(
+                              builder: (context, cart, child) => Text(
+                                  "$currencyCode ${widget.product.price}",
+                                  style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold)),
+                            ),
                           ])),
-                      Consumer<CartModel>(
-                        builder: (context, cart, child) =>
-                            Text("$currencyCode ${widget.product.price}",
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                )),
-                      ),
-                      if (widget.product.description.isNotEmpty)
-                        Text(
-                          widget.product.description,
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                      SizedBox(
-                        height: size.height * 0.2,
-                      )
-                    ]))
-              ],
-            ))),
+                ]))),
         Align(
             alignment: Alignment.bottomCenter,
             child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
               Container(
-                  decoration: const BoxDecoration(
-                      color: kPrimaryLightColor,
-                      borderRadius: BorderRadius.all(Radius.circular(5.0))),
-                  child: Padding(
+                decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                child: Padding(
                     padding: const EdgeInsets.only(
-                        top: 10, bottom: 10, right: 5, left: 5),
+                        top: 10, bottom: 10, right: 10, left: 10),
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          _ActionButton(delete: true, item: widget.product),
-                          Padding(
-                              padding: const EdgeInsets.only(left: 5, right: 5),
-                              child: Consumer<CartModel>(
-                                builder: (context, cart, child) => Text(
-                                    cart.itemCount(widget.product) != 0
-                                        ? cart
-                                            .itemCount(widget.product)
-                                            .toString()
-                                        : "0",
-                                    style: const TextStyle(
-                                        fontSize: 30, color: kPrimaryColor)),
-                              )),
-                          _ActionButton(delete: false, item: widget.product)
-                        ]),
-                  )),
-              Consumer<CartModel>(builder: (context, cart, child) {
-                if (cart.itemCount(widget.product) > 0) {
-                  return Container(
-                    decoration: const BoxDecoration(
-                        color: kPrimaryLightColor,
-                        borderRadius: BorderRadius.all(Radius.circular(5.0))),
-                    child: Padding(
-                        padding: const EdgeInsets.all(5),
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.max,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "Note",
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                          Consumer<CartModel>(
+                            builder: (context, cart, child) => GestureDetector(
+                              child: const Icon(
+                                Icons.remove_circle_rounded,
+                                color: kPrimaryColor,
+                                size: 40,
                               ),
-                              Text(
-                                  "Money to be spent on this item is  $currencyCode ${double.parse(widget.product.price) * cart.itemCount(widget.product)} because you have placed ${cart.itemCount(widget.product).toString()} of this item on your order list leaving you with $currencyCode ${cart.remainingBudget(totalBudget, cart.totalPrice)} balance on your budget.",
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                  )),
-                              SizedBox(
-                                height: size.height * 0.01,
-                              )
-                            ])),
-                  );
-                }
-
-                return Container();
-              })
+                              onTap: () {
+                                if (cart.items.contains(widget.product)) {
+                                  cart.remove(widget.product);
+                                  setState(() {
+                                    itemQuantity--;
+                                  });
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              'Item removed from order list')));
+                                }
+                              },
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 5, right: 5),
+                            child: Text(itemQuantity.toString(),
+                                style: const TextStyle(fontSize: 30)),
+                          ),
+                          Consumer<CartModel>(
+                              builder: (context, cart, child) =>
+                                  GestureDetector(
+                                    child: const Icon(
+                                      Icons.add_circle_rounded,
+                                      color: kPrimaryColor,
+                                      size: 40,
+                                    ),
+                                    onTap: () {
+                                      setState(() {
+                                        itemQuantity =
+                                            cart.itemCount(widget.product) + 1;
+                                      });
+                                    },
+                                  ))
+                        ])),
+              ),
             ]))
       ]),
+      bottomNavigationBar: BottomAppBar(
+        elevation: 0,
+        child: Consumer<CartModel>(
+            builder: (context, cart, child) => ElevatedButton(
+                onPressed: () {
+                  int itemsToAdd =
+                      itemQuantity = cart.itemCount(widget.product);
+                  itemsToAdd = itemsToAdd == 0 ? 1 : itemsToAdd;
+                  for (var i = 0; i < itemsToAdd; i++) {
+                    cart.add(widget.product);
+                  }
+                  log(widget.product.id, 'product');
+                  setState(() {
+                    itemQuantity = cart.itemCount(widget.product);
+                  });
+
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Item added to order list')));
+                },
+                child: Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          itemQuantity.toString() +
+                              (itemQuantity > 1 ? " items" : " item"),
+                          style: const TextStyle(
+                            fontSize: 14,
+                          ),
+                        ),
+                        const Text("Add to order",
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold)),
+                        Consumer<CartModel>(builder: (context, cart, child) {
+                          return Text(
+                            "$currencyCode ${double.parse(widget.product.price) * itemQuantity} ",
+                            style: const TextStyle(
+                              fontSize: 14,
+                            ),
+                          );
+                        })
+                      ],
+                    )))),
+      ),
     );
   }
 
@@ -424,73 +408,6 @@ class _ProductScreenState extends State<ProductScreen> {
       });
     } catch (error) {
       // print(error);
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Error encounter processing logs")));
-    }
-  }
-}
-
-class _ActionButton extends StatefulWidget {
-  final Product item;
-  final bool delete;
-
-  const _ActionButton({required this.item, required this.delete});
-
-  @override
-  State<_ActionButton> createState() => _ActionButtonState();
-}
-
-class _ActionButtonState extends State<_ActionButton> {
-  var settings = SettingPreferences.getSetting();
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<CartModel>(
-      builder: (context, cart, child) => GestureDetector(
-        child: widget.delete
-            ? const Icon(
-                Icons.remove_circle_outline,
-                color: Colors.redAccent,
-                size: 40,
-              )
-            : const Icon(
-                Icons.add_circle_outline_rounded,
-                color: Colors.green,
-                size: 40,
-              ),
-        onTap: () {
-          String message = '';
-          if (widget.delete) {
-            if (cart.catalog.items.contains(widget.item)) {
-              cart.remove(widget.item);
-              message = 'Item removed from order list';
-            }
-          } else {
-            cart.add(widget.item);
-            message = 'Item added to order list';
-            log(widget.item.id, 'product');
-          }
-          if (message.isNotEmpty) {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(message.toString())));
-          }
-        },
-      ),
-    );
-  }
-
-  log(String id, String section) async {
-    try {
-      String token = settings.token.isNotEmpty ? settings.token : '1234567890';
-      TrackDataModel requestModel =
-          TrackDataModel(id: id, section: section, token: token);
-      APIServiceList apiService = APIServiceList();
-      await apiService.track(requestModel).then((value) async {
-        if (value.error) {}
-        if (!value.error) {}
-      });
-    } catch (error) {
-      //print(error);
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Error encounter processing logs")));
     }

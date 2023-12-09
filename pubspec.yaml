@@ -106,11 +106,19 @@ flutter:
           - asset: assets/fonts/Quicksand/Quicksand-Bold.ttf
           - asset: assets/fonts/Quicksand/Quicksand-SemiBold.ttf
           - asset: assets/fonts/Quicksand/Quicksand-Medium.ttf
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
+      - family: Roboto
+        fonts:
+          - asset: assets/fonts/Roboto/Roboto-Black.ttf
+          - asset: assets/fonts/Roboto/Roboto-BlackItalic.ttf
+          - asset: assets/fonts/Roboto/Roboto-Bold.ttf
+          - asset: assets/fonts/Roboto/Roboto-BoldItalic.ttf
+          - asset: assets/fonts/Roboto/Roboto-Italic.ttf
+          - asset: assets/fonts/Roboto/Roboto-LightItalic.ttf
+          - asset: assets/fonts/Roboto/Roboto-Medium.ttf
+          - asset: assets/fonts/Roboto/Roboto-MediumItalic.ttf
+          - asset: assets/fonts/Roboto/Roboto-Regular.ttf
+          - asset: assets/fonts/Roboto/Roboto-Thin.ttf
+          - asset: assets/fonts/Roboto/Roboto-ThinItalic.ttf
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

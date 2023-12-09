@@ -38,21 +38,41 @@ class APIServiceList {
     return processRequest(requestModel, url);
   }
 
+  
+  Future<ResponseModel> appTerms(GetRequestModel requestModel) async {
+    String url = "${domainURL}terms";
+    return processRequest(requestModel, url);
+  }
+
+  Future<ResponseModel> appDiscliamer(GetRequestModel requestModel) async {
+    String url = "${domainURL}disclaimer";
+    return processRequest(requestModel, url);
+  }
+
+  Future<ResponseModel> appFaqs(GetRequestModel requestModel) async {
+    String url = "${domainURL}faqs";
+    return processRequest(requestModel, url);
+  }
+
+  Future<ResponseModel> appPrivacy(GetRequestModel requestModel) async {
+    String url = "${domainURL}privacy";
+    return processRequest(requestModel, url);
+  }
+
+  Future<ResponseModel> appAbout(GetRequestModel requestModel) async {
+    String url = "${domainURL}about";
+    return processRequest(requestModel, url);
+  }
+
   bool testNoExc = false;
 
   Future<ResponseModel> processRequest(dynamic requestModel, String url) async {
-    // print(">>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<");
-    // print(InternetConnectionChecker().isHostReachable(AddressCheckOptions(hostname: )));
-    // if (await InternetConnectionChecker().hasConnection) {
     final response =
         await http.post(Uri.parse(url), body: requestModel.toJson());   
     if (response.statusCode == 200 || response.statusCode == 400) {
       return ResponseModel.fromJson(response.body);
     }
-
     return ResponseModel.error(
         "Server failed to load request.Please try again");
-    // }
-    // return ResponseModel.error("No active connection available");
   }
 }

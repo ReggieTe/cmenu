@@ -66,6 +66,46 @@ class RequestDataModel {
   }
 }
 
+
+class GetRequestModel {
+  final String authid;
+  GetRequestModel({
+    required this.authid,
+  });
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {
+      'token': authid.trim(),
+    };
+    return map;
+  }
+}
+
+class GetWithKeyRequestModel {
+  final String authid;
+  final String id;
+  final String data;
+  GetWithKeyRequestModel({
+    required this.authid,
+    required this.id,
+    required this.data,
+  });
+
+  Map<String, dynamic> toJson() {
+    Map<String, dynamic> map = {
+      'token': authid.trim(),
+      'id': id.trim(),
+      'data': data.trim()
+    };
+    return map;
+  }
+
+  @override
+  String toString() {
+    return toJson().toString();
+  }
+}
+
 class TrackDataModel {
   final String token;
   final String section;

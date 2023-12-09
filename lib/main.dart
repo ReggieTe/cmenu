@@ -21,8 +21,9 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {    
     return MultiProvider(
         providers: [
           ChangeNotifierProvider<HistoryModel>(
@@ -41,15 +42,16 @@ class MyApp extends StatelessWidget {
             },
           ),
         ],
-        child: MaterialApp(
+         child:MaterialApp(
           title: 'cMenu',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
-            // fontFamily: 'Quicksand',
+          fontFamily: 'Roboto',
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
             useMaterial3: true,
           ),
           home: const SplashScreen(),
-        ));
+        )
+        );
   }
 }
