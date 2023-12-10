@@ -96,6 +96,7 @@ class _SearchResultsListViewState extends State<SearchResultsListView> {
                                                     textAlign:
                                                         TextAlign.justify,
                                                     style: const TextStyle(
+                                                      overflow: TextOverflow.ellipsis,
                                                         fontSize: 14),
                                                   ))),
                                         Consumer<CartModel>(

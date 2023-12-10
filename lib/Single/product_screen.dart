@@ -291,6 +291,7 @@ class _ProductScreenState extends State<ProductScreen> {
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold)),
                             ),
+                            SizedBox(height: size.height*0.1,)
                           ])),
                 ]))),
         Align(
@@ -298,6 +299,7 @@ class _ProductScreenState extends State<ProductScreen> {
             child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
               Container(
                 decoration: const BoxDecoration(
+                    color: Colors.white,
                     borderRadius: BorderRadius.all(Radius.circular(5.0))),
                 child: Padding(
                     padding: const EdgeInsets.only(

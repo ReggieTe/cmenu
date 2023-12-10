@@ -166,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: makeAppBarTransparent
             ? widget.searchItem.images.isNotEmpty
                 ? Colors.transparent
-                : Colors.white
+                : Colors.grey
             : null,
         leading: GestureDetector(
             onTap: () {
@@ -177,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ? widget.searchItem.images.isNotEmpty
                         ? showSearchBar
                             ? kPrimaryColor
-                            : Colors.white
+                            : Colors.grey
                         : kPrimaryColor
                     : kPrimaryColor)),
         title: GestureDetector(
@@ -225,7 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ? widget.searchItem.images.isNotEmpty
                                       ? showSearchBar
                                           ? kPrimaryColor
-                                          : Colors.white
+                                          : Colors.grey
                                       : kPrimaryColor
                                   : kPrimaryColor),
                         )
@@ -234,7 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ? widget.searchItem.images.isNotEmpty
                                   ? showSearchBar
                                       ? kPrimaryColor
-                                      : Colors.white
+                                      : Colors.grey
                                   : kPrimaryColor
                               : kPrimaryColor),
                 )),
@@ -397,7 +397,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                               ),
                                             ],
                                           ))))),
-                          if (categories.isNotEmpty)
                             Padding(
                                 padding: const EdgeInsets.all(5),
                                 child: Row(
