@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:io';
+
 import 'package:cmenu/Components/Class/menu_category.dart';
 import 'package:cmenu/Components/Class/search_item.dart';
 import 'package:cmenu/Components/Utils/common.dart';
@@ -48,7 +50,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
     });
     super.initState();
     BannerAd(
-      adUnitId: bannerAndroid,
+      adUnitId:  Platform.isIOS? banneriOS : bannerAndroid,
       request: const AdRequest(),
       size: AdSize.banner,
       listener: BannerAdListener(

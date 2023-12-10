@@ -7,6 +7,7 @@ import 'package:cmenu/Single/gallery_screen.dart';
 import 'package:cmenu/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // ignore: must_be_immutable
 class HomeSection extends StatefulWidget {
@@ -116,16 +117,16 @@ class _HomeSectionState extends State<HomeSection> {
                                                     fontSize: 16,overflow: TextOverflow.ellipsis)))
                                           ],
                                         ),
-                                        GestureDetector(
-                                          onTap: () {},
-                                          child: const Text(
-                                            "Get directions",
-                                            style: TextStyle(
-                                                color: Colors.blue,
-                                                overflow:
-                                                    TextOverflow.ellipsis),
-                                          ),
-                                        ),
+                                        // GestureDetector(
+                                        //   onTap: () {},
+                                        //   child: const Text(
+                                        //     "Get directions",
+                                        //     style: TextStyle(
+                                        //         color: Colors.blue,
+                                        //         overflow:
+                                        //             TextOverflow.ellipsis),
+                                        //   ),
+                                        // ),
                                       ])),
                             if (widget.searchItem.phone.isNotEmpty)
                               Padding(
@@ -148,7 +149,13 @@ class _HomeSectionState extends State<HomeSection> {
                                         ],
                                       ),
                                       GestureDetector(
-                                        onTap: () {},
+                                        onTap: ()async {
+                                            final Uri launchUri = Uri(
+                                                      scheme: 'tel',
+                                                      path: widget.searchItem.phone,
+                                                    );
+                                                    await launchUrl(launchUri);
+                                        },
                                         child: const Text(
                                           "Book now",
                                           style: TextStyle(
@@ -158,6 +165,7 @@ class _HomeSectionState extends State<HomeSection> {
                                       ),
                                     ],
                                   )),
+                            if(widget.searchItem.days.isNotEmpty)
                             Padding(
                                 padding: const EdgeInsets.only(top: 10),
                                 child: Column(
@@ -189,7 +197,9 @@ class _HomeSectionState extends State<HomeSection> {
                                       )
                                   ],
                                 )),
-                          ]),
+                          
+                          
+                                      const SizedBox(height:10.0)]),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,

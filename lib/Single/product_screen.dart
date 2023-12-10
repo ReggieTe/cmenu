@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cmenu/Cart/cart_screen.dart';
 import 'package:cmenu/Components/Api/api.service.list.dart';
 import 'package:cmenu/Components/Class/product.dart';
@@ -40,7 +42,7 @@ class _ProductScreenState extends State<ProductScreen> {
 
     super.initState();
     BannerAd(
-      adUnitId: bannerAndroid,
+      adUnitId:  Platform.isIOS? banneriOS : bannerAndroid,
       request: const AdRequest(),
       size: AdSize.banner,
       listener: BannerAdListener(

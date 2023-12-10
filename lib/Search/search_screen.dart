@@ -953,14 +953,6 @@ class _SearchScreenState extends State<SearchScreen> {
     for (var element in daysList) {
       days.add(OpenTime(element['day'].toString(),element['time'].toString()));
     }
-    days.add(OpenTime("Monday","8:00am - 5:00pm"));
-    days.add(OpenTime("Tueday","8:00am - 5:00pm"));
-    days.add(OpenTime("Wednesday","8:00am - 5:00pm"));
-    days.add(OpenTime("Thursday","8:00am - 5:00pm"));
-    days.add(OpenTime("Friday","8:00am - 5:00pm"));
-    days.add(OpenTime("Saturday","8:00am - 5:00pm"));
-    days.add(OpenTime("Sunday","8:00am - 5:00pm"));
-
     return days;
   }
 

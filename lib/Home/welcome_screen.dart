@@ -49,12 +49,13 @@ class _HomeScreenState extends State<HomeScreen> {
   bool showPlaceInfor = true;
   bool makeAppBarTransparent = true;
   List<MenuCategory> categories = [];
+  bool _bannerAdIsLoaded = false;
 
   String path = '';
   bool downloading = false;
   String downloadingStr = "No data";
   double download = 0;
-  String savePath = "";  
+  String savePath = "";
   bool showPromotions = true;
 
   @override
@@ -65,8 +66,9 @@ class _HomeScreenState extends State<HomeScreen> {
       totalBudget = settings.budget;
     });
     super.initState();
+    _bannerAd?.dispose();
     BannerAd(
-      adUnitId: bannerAndroid,
+      adUnitId: Platform.isIOS? banneriOS : bannerAndroid,
       request: const AdRequest(),
       size: AdSize.banner,
       listener: BannerAdListener(
@@ -84,9 +86,38 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    // Create the ad objects and load ads.
+    _bannerAd = BannerAd(
+      size: AdSize.banner,
+      request: const AdRequest(),
+      adUnitId: Platform.isIOS? banneriOS : bannerAndroid,
+      listener: BannerAdListener(
+        onAdLoaded: (Ad ad) {
+         // print('$BannerAd loaded.');
+          setState(() => _bannerAdIsLoaded = true);
+        },
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          //print('$BannerAd failedToLoad: $error');
+          ad.dispose();
+        },
+        onAdOpened: (Ad ad) {
+          //print('$BannerAd onAdOpened.');
+        },
+        onAdClosed: (Ad ad) {
+          //print('$BannerAd onAdClosed.');
+        },
+      ),
+    )..load();
+
+    super.didChangeDependencies();
+  }
+
+  @override
   void dispose() {
     _bannerAd?.dispose();
     _controller.removeListener(_onScrollEvent);
+    _textEditingController.dispose();
     super.dispose();
   }
 
@@ -106,15 +137,17 @@ class _HomeScreenState extends State<HomeScreen> {
         child: _uiSetup(context),
       );
 
- Widget bannerAdWidget() {
-    return _bannerAd!=null?StatefulBuilder(
-      builder: (context, setState) => Container(
-        width: _bannerAd!.size.width.toDouble(),
-        height: _bannerAd!.size.height.toDouble(),
-        alignment: Alignment.center,
-        child: AdWidget(ad: _bannerAd!),
-      ),
-    ):Container();
+  Widget bannerAdWidget() {
+    return _bannerAd != null && _bannerAdIsLoaded
+        ? Center(child: StatefulBuilder(
+            builder: (context, setState) => Container(
+              width: _bannerAd!.size.width.toDouble(),
+              height: _bannerAd!.size.height.toDouble(),
+              alignment: Alignment.center,
+              child: AdWidget(ad: _bannerAd!),
+            ),
+          ))
+        : Container();
   }
 
   Widget _uiSetup(BuildContext context) {
@@ -148,7 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         : kPrimaryColor
                     : kPrimaryColor)),
         title: GestureDetector(
-            onTap: () { },
+            onTap: () {},
             child: widget.searchItem.images.isNotEmpty
                 ? Container(
                     decoration: const BoxDecoration(
