@@ -38,7 +38,6 @@ class APIServiceList {
     return processRequest(requestModel, url);
   }
 
-  
   Future<ResponseModel> appTerms(GetRequestModel requestModel) async {
     String url = "${domainURL}terms";
     return processRequest(requestModel, url);
@@ -68,7 +67,7 @@ class APIServiceList {
 
   Future<ResponseModel> processRequest(dynamic requestModel, String url) async {
     final response =
-        await http.post(Uri.parse(url), body: requestModel.toJson());   
+        await http.post(Uri.parse(url), body: requestModel.toJson());
     if (response.statusCode == 200 || response.statusCode == 400) {
       return ResponseModel.fromJson(response.body);
     }

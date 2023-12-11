@@ -72,7 +72,7 @@ class _InformationCenterContentScreenState
           children: [
             for (var item in pageData)
             Padding(
-                      padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
+                      padding: const EdgeInsets.only(top: 5, left: 5, right: 5),
                       child: Container(
               width: double.infinity,
               margin: const EdgeInsets.only(bottom: 1),
@@ -110,7 +110,7 @@ class _InformationCenterContentScreenState
         isApiCallProcess = false;
       });
       if (!value.error) {
-        for (var item in value.data['info']) {
+        for (var item in value.data['data']['info']) {
           pageContent.add(KeyAndValue(
               id: item["title"].toString(), name: item["body"].toString()));
         }
