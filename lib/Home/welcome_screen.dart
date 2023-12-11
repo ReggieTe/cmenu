@@ -13,7 +13,6 @@ import 'package:cmenu/Components/Utils/setting_preferences.dart';
 import 'package:cmenu/Components/empty_page_content.dart';
 import 'package:cmenu/Components/home_section.dart';
 import 'package:cmenu/Components/progress_loader.dart';
-import 'package:cmenu/Home/components/background.dart';
 import 'package:cmenu/constants.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:external_path/external_path.dart';
@@ -166,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: makeAppBarTransparent
             ? widget.searchItem.images.isNotEmpty
                 ? Colors.transparent
-                : Colors.grey
+                : Colors.white
             : null,
         leading: GestureDetector(
             onTap: () {
@@ -241,8 +240,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Background(
-          child: SingleChildScrollView(
+      body: SingleChildScrollView(
               controller: _controller,
               child: SizedBox(
                   height: double.maxFinite,
@@ -528,25 +526,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: EmptyPageContent(
                                       imageLink: "assets/images/menu.png",
                                       label: '0 items available'))),
-                      ])))),
+                      ])))
     );
-  }
-
-  log(String id, String section) async {
-    try {
-      String token = settings.token.isNotEmpty ? settings.token : '1234567890';
-      TrackDataModel requestModel =
-          TrackDataModel(id: id, section: section, token: token);
-      APIServiceList apiService = APIServiceList();
-      await apiService.track(requestModel).then((value) async {
-        if (value.error) {}
-        if (!value.error) {}
-      });
-    } catch (error) {
-      //print(error);
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Error encounter processing logs")));
-    }
   }
 
   _downloadMenu({String id = ''}) async {

@@ -135,7 +135,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   inProgress = true;
                                 });
                                 await _search(id: tag.id);
-                                log(tag.id, 'tag');
+                                Common.log(tag.id, 'tag');
                                 setState(() {
                                   inProgress = false;
                                 });
@@ -213,7 +213,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                                 context.read<HistoryModel>();
                                             if (!history.items.contains(i)) {
                                               history.add(i);
-                                              log(i.id, 'place');
+                                              Common.log(i.id, 'place');
                                                }
                                             Navigator.push(context,
                                                 MaterialPageRoute(
@@ -489,7 +489,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 var history = context.read<HistoryModel>();
                                 if (!history.items.contains(item)) {
                                   history.add(item);
-                                  log(item.id, 'place');
+                                  Common.log(item.id, 'place');
                                 }
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
@@ -614,23 +614,6 @@ class _SearchScreenState extends State<SearchScreen> {
                                                 ),
                                               ],
                                             )))):null,));
-  }
-
-  log(String id, String section) async {
-    try {
-      String token = settings.token.isNotEmpty ? settings.token : '1234567890';
-      TrackDataModel requestModel =
-          TrackDataModel(id: id, section: section, token: token);
-      APIServiceList apiService = APIServiceList();
-      await apiService.track(requestModel).then((value) async {
-        if (value.error) {}
-        if (!value.error) {}
-      });
-    } catch (error) {
-      //print(error);
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Error encounter processing logs")));
-    }
   }
 
   getTags() async {

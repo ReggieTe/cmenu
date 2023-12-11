@@ -442,7 +442,7 @@ class _ActionButtonState extends State<_ActionButton> {
         } else {
           cart.add(widget.item);
           message = 'Item added to order list';
-          //log(widget.item.id, 'product');
+          
         }
         if (message.isNotEmpty) {
           ScaffoldMessenger.of(context)

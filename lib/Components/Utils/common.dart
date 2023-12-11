@@ -1,5 +1,8 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cmenu/Components/Api/api.service.list.dart';
 import 'package:cmenu/Components/Class/image.dart' as local_image;
+import 'package:cmenu/Components/Class/response.dart';
+import 'package:cmenu/Components/Utils/setting_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:image_fade/image_fade.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
@@ -10,6 +13,22 @@ class Common {
     InternetConnectionChecker internetConnectionChecker,
   ) async {
     return await InternetConnectionChecker().hasConnection;
+  }
+
+  static void log(String id, String section) async {
+    try {
+      var settings = SettingPreferences.getSetting();
+      String token = settings.token.isNotEmpty ? settings.token : '1234567890';
+      TrackDataModel requestModel =
+          TrackDataModel(id: id, section: section, token: token);
+      APIServiceList apiService = APIServiceList();
+      await apiService.track(requestModel).then((value) async {
+        if (value.error) {}
+        if (!value.error) {}
+      });
+    } catch (error) {
+      //print(error);
+    }
   }
 
   static bool isValidName(String name) {

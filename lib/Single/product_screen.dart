@@ -1,9 +1,7 @@
 import 'dart:io';
 
 import 'package:cmenu/Cart/cart_screen.dart';
-import 'package:cmenu/Components/Api/api.service.list.dart';
 import 'package:cmenu/Components/Class/product.dart';
-import 'package:cmenu/Components/Class/response.dart';
 import 'package:cmenu/Components/Model/cart.dart';
 import 'package:cmenu/Components/Utils/common.dart';
 import 'package:cmenu/Components/Utils/setting_preferences.dart';
@@ -363,7 +361,7 @@ class _ProductScreenState extends State<ProductScreen> {
                   for (var i = 0; i < itemsToAdd; i++) {
                     cart.add(widget.product);
                   }
-                  log(widget.product.id, 'product');
+                  Common.log(widget.product.id, 'product');
                   setState(() {
                     itemQuantity = cart.itemCount(widget.product);
                   });
@@ -398,22 +396,5 @@ class _ProductScreenState extends State<ProductScreen> {
                     )))),
       ),
     );
-  }
-
-  log(String id, String section) async {
-    try {
-      String token = settings.token.isNotEmpty ? settings.token : '1234567890';
-      TrackDataModel requestModel =
-          TrackDataModel(id: id, section: section, token: token);
-      APIServiceList apiService = APIServiceList();
-      await apiService.track(requestModel).then((value) async {
-        if (value.error) {}
-        if (!value.error) {}
-      });
-    } catch (error) {
-      // print(error);
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Error encounter processing logs")));
-    }
   }
 }

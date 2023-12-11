@@ -1,5 +1,3 @@
-import 'package:cmenu/Components/Api/api.service.list.dart';
-import 'package:cmenu/Components/Class/response.dart';
 import 'package:cmenu/Components/Class/search_item.dart';
 import 'package:cmenu/Components/Utils/common.dart';
 import 'package:cmenu/Components/Utils/setting_preferences.dart';
@@ -252,7 +250,7 @@ class _HomeSectionState extends State<HomeSection> {
                                             for (var i in widget.searchItem.ads)
                                               GestureDetector(
                                                   onTap: () {
-                                                    log(i.id, "ad");
+                                                    Common.log(i.id, "ad");
                                                     Navigator.push(context,
                                                         MaterialPageRoute(
                                                             builder: (context) {
@@ -283,24 +281,5 @@ class _HomeSectionState extends State<HomeSection> {
                     )
                   ]))
         ]);
-  }
-
-  log(String id, String section) async {
-    try {
-      String token = widget.settings.token.isNotEmpty
-          ? widget.settings.token
-          : '1234567890';
-      TrackDataModel requestModel =
-          TrackDataModel(id: id, section: section, token: token);
-      APIServiceList apiService = APIServiceList();
-      await apiService.track(requestModel).then((value) async {
-        if (value.error) {}
-        if (!value.error) {}
-      });
-    } catch (error) {
-      //print(error);
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Error encounter processing logs")));
-    }
   }
 }
