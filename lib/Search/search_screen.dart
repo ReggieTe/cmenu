@@ -16,6 +16,7 @@ import 'package:cmenu/Home/welcome_screen.dart';
 import 'package:cmenu/InformationCenter/information_center.dart';
 import 'package:cmenu/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -74,554 +75,533 @@ class _SearchScreenState extends State<SearchScreen> {
           return Future.value(false);
         },
         child: Scaffold(
-            appBar: AppBar(
-              leading: GestureDetector(
-            onTap: () {
-              
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) {
-                                  return const InformationCenterScreen();
-                                }));
-            },
-            child: const Icon(Icons.list_rounded, color: kPrimaryColor)),
-              centerTitle: true,
-              elevation: 0,
-              title: const Text(
-                " cMenu",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: kPrimaryColor,
-                    fontFamily: 'Quicksand'),
-              ),
-              actions: [
-                IconButton(
-                  icon: showSearchBar
-                      ? const Icon(
-                          Icons.cancel,
-                          color: Colors.red,
-                        )
-                      : const Icon(Icons.search, color: kPrimaryColor),
-                  onPressed: () {
-                   
-                      setState(() { 
-                        if (showSearchBar) {                      
-                        showSearchBar = false;
-                        showSearchResults = false;
-                        showTrendingItems = true;
-                        var history = context.read<HistoryModel>();
-                        searchItems = history.items;
-                    } else {
-                        showSearchBar = true;
-                        showTrendingItems = false;
-                    }
-                      });
-                  },
-                ),
-              ],
+          appBar: AppBar(
+            leading: GestureDetector(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return const InformationCenterScreen();
+                  }));
+                },
+                child: const Icon(Icons.list_rounded, color: kPrimaryColor)),
+            centerTitle: true,
+            elevation: 0,
+            title: const Text(
+              " cMenu",
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: kPrimaryColor,
+                  fontFamily: 'Quicksand'),
             ),
-            body: SizedBox(
-              height: size.height,
-              width: double.infinity,
-              child: SingleChildScrollView(
-                  child: Column(children: [
-                SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        for (var tag in tags)
-                          GestureDetector(
-                              onTap: () async {
-                                setState(() {
-                                  inProgress = true;
-                                });
-                                await _search(id: tag.id);
-                                Common.log(tag.id, 'tag');
-                                setState(() {
-                                  inProgress = false;
-                                });
-                              },
-                              child: Padding(
-                                  padding: const EdgeInsets.all(5),
-                                  child: Container(
-                                      decoration: const BoxDecoration(
-                                          color: kPrimaryLightColor,
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(30.0))),
-                                      padding: const EdgeInsets.only(
-                                          left: 10,
-                                          right: 10,
-                                          top: 3,
-                                          bottom: 3),
-                                      child: Padding(
-                                          padding: const EdgeInsets.all(5),
-                                          child: Text(
-                                            '${tag.name} (${tag.count})',
-                                            style: const TextStyle(
-                                                color: kPrimaryColor),
-                                          ))))),
-                      ],
-                    )),
-                if (showTrendingItems)
-                    if (trendingItems.isNotEmpty)
-                    Padding(
-                        padding: const EdgeInsets.only(left: 10, bottom: 5),
-                        child: Column(
-                            children: [
-                                  const Padding(
-                                      padding: EdgeInsets.all(5),
-                                      child:
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                       Text(
-                                          "Trending Places",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w500,
-                                              color: kPrimaryColor,
-                                              fontSize: 16)),
-
-                                        // GestureDetector(
-                                        //   child:const Text(
-                                        //   "More",
-                                        //   style: TextStyle(
-                                        //       color: Colors.blue,
-                                        //       fontSize: 14,)) ,
-                                        //       onTap:(){
-                                        //       log("", 'discover');                                               
-                                        //     Navigator.push(context,
-                                        //         MaterialPageRoute(
-                                        //             builder: (context) {
-                                        //       return DiscoverScreen(trendingItems: trendingItems);
-                                        //     }));
-
-                                        //       }
-                                        // )
-
-
-                                      ],)),
-                              SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  children: [
-                                    for (var i in trendingItems)
-                                      GestureDetector(
-                                          onTap: () {
-                                            var cart =
-                                                context.read<CartModel>();
-                                            cart.removeAll();
-                                            var history =
-                                                context.read<HistoryModel>();
-                                            if (!history.items.contains(i)) {
-                                              history.add(i);
-                                              Common.log(i.id, 'place');
-                                               }
-                                            Navigator.push(context,
-                                                MaterialPageRoute(
-                                                    builder: (context) {
-                                              return HomeScreen(searchItem: i);
-                                            }));
-                                          },
-                                          child: Padding(
-                                              padding: const EdgeInsets.all(3),
-                                              child: Container(
-                                                  width: size.width * 0.30,
-                                                  height: size.height * 0.25,
-                                                  decoration:
-                                                      const BoxDecoration(
-                                                          color: Color.fromARGB(
-                                                              15,
-                                                              153,
-                                                              153,
-                                                              153),
-                                                          borderRadius:
-                                                              BorderRadius.all(
-                                                                  Radius
-                                                                      .circular(
-                                                                          5.0))),
-                                                  child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    mainAxisSize:
-                                                        MainAxisSize.max,
-                                                    children: [
-                                                      Common.displayImage(
-                                                          images: i.images,
-                                                          imageType: 'place',
-                                                          imageHeight:
-                                                              size.height *
-                                                                  0.20,
-                                                          imageWidth:
-                                                              size.width *
-                                                                  0.30),
-                                                      Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .only(
-                                                                left: 4,
-                                                                top: 10),
-                                                        child: Text(i.name,
-                                                            style: const TextStyle(
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                color:
-                                                                    kPrimaryColor,
-                                                                fontFamily:
-                                                                    'Quicksand'),
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis),
-                                                      )
-                                                    ],
-                                                  ))))
-                                  ],
-                                ),
-                              )
-                            ])),
-                if (showSearchBar)
+            actions: [
+              IconButton(
+                icon: showSearchBar
+                    ? const Icon(
+                        Icons.cancel,
+                        color: Colors.red,
+                      )
+                    : const Icon(Icons.search, color: kPrimaryColor),
+                onPressed: () {
+                  setState(() {
+                    if (showSearchBar) {
+                      showSearchBar = false;
+                      showSearchResults = false;
+                      showTrendingItems = true;
+                      var history = context.read<HistoryModel>();
+                      searchItems = history.items;
+                    } else {
+                      showSearchBar = true;
+                      showTrendingItems = false;
+                    }
+                  });
+                },
+              ),
+            ],
+          ),
+          body: SizedBox(
+            height: size.height,
+            width: double.infinity,
+            child: SingleChildScrollView(
+                child: Column(children: [
+              SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      for (var tag in tags)
+                        GestureDetector(
+                            onTap: () async {
+                              setState(() {
+                                inProgress = true;
+                              });
+                              await _search(id: tag.id);
+                              Common.log(tag.id, 'tag');
+                              setState(() {
+                                inProgress = false;
+                              });
+                            },
+                            child: Padding(
+                                padding: const EdgeInsets.all(5),
+                                child: Container(
+                                    decoration: const BoxDecoration(
+                                        color: kPrimaryLightColor,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(30.0))),
+                                    padding: const EdgeInsets.only(
+                                        left: 10, right: 10, top: 3, bottom: 3),
+                                    child: Padding(
+                                        padding: const EdgeInsets.all(5),
+                                        child: Text(
+                                          '${tag.name} (${tag.count})',
+                                          style: const TextStyle(
+                                              color: kPrimaryColor),
+                                        ))))),
+                    ],
+                  )),
+              if (showTrendingItems)
+                if (trendingItems.isNotEmpty)
                   Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 5),
-                      child: TextField(
-                          controller: _textEditingController,
-                          onSubmitted: (value) async {
-                            setState(() {
-                              searchErrorMessage = '';
-                            });
-                            if (query.isNotEmpty) {
-                              if (Common.isValidName(value)) {
-                                await _search();
-                              } else {
-                                setState(() {
-                                  searchErrorMessage =
-                                      "Special characters (,./?><!@#%^&*() not allowed.Try again";
-                                });
-                              }
+                      padding: const EdgeInsets.only(left: 10, bottom: 5),
+                      child: Column(children: [
+                        const Padding(
+                            padding: EdgeInsets.all(5),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text("Trending Places",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        color: kPrimaryColor,
+                                        fontSize: 16)),
+
+                                // GestureDetector(
+                                //   child:const Text(
+                                //   "More",
+                                //   style: TextStyle(
+                                //       color: Colors.blue,
+                                //       fontSize: 14,)) ,
+                                //       onTap:(){
+                                //       log("", 'discover');
+                                //     Navigator.push(context,
+                                //         MaterialPageRoute(
+                                //             builder: (context) {
+                                //       return DiscoverScreen(trendingItems: trendingItems);
+                                //     }));
+
+                                //       }
+                                // )
+                              ],
+                            )),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              for (var i in trendingItems)
+                                GestureDetector(
+                                    onTap: () {
+                                      var cart = context.read<CartModel>();
+                                      cart.removeAll();
+                                      var history =
+                                          context.read<HistoryModel>();
+                                      if (!history.items.contains(i)) {
+                                        history.add(i);
+                                        Common.log(i.id, 'place');
+                                      }
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) {
+                                        return HomeScreen(searchItem: i);
+                                      }));
+                                    },
+                                    child: Padding(
+                                        padding: const EdgeInsets.all(3),
+                                        child: Container(
+                                            width: size.width * 0.30,
+                                            height: size.height * 0.25,
+                                            decoration: const BoxDecoration(
+                                                color: Color.fromARGB(
+                                                    15, 153, 153, 153),
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(5.0))),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.max,
+                                              children: [
+                                                Common.displayImage(
+                                                    images: i.images,
+                                                    imageType: 'place',
+                                                    imageHeight:
+                                                        size.height * 0.20,
+                                                    imageWidth:
+                                                        size.width * 0.30),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 4, top: 10),
+                                                  child: Text(i.name,
+                                                      style: const TextStyle(
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color: kPrimaryColor,
+                                                          fontFamily:
+                                                              'Quicksand'),
+                                                      overflow: TextOverflow
+                                                          .ellipsis),
+                                                )
+                                              ],
+                                            ))))
+                            ],
+                          ),
+                        )
+                      ])),
+              if (showSearchBar)
+                Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    child: TextField(
+                        controller: _textEditingController,
+                        onSubmitted: (value) async {
+                          setState(() {
+                            searchErrorMessage = '';
+                          });
+                          if (query.isNotEmpty) {
+                            if (Common.isValidName(value)) {
+                              await _search();
                             } else {
                               setState(() {
                                 searchErrorMessage =
-                                    "Place name empty , must sure you type something.Try again";
+                                    "Special characters (,./?><!@#%^&*() not allowed.Try again";
                               });
                             }
-                          },
-                          onChanged: (String value) {
+                          } else {
                             setState(() {
-                              searchErrorMessage = '';
-                              query = value;
+                              searchErrorMessage =
+                                  "Place name empty , must sure you type something.Try again";
                             });
-                          },
-                          style: const TextStyle(color: Colors.teal),
-                          decoration: InputDecoration(
-                            filled: true,
-                            focusColor: Colors.teal,
-                            fillColor: Colors.grey.shade200,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide.none,
-                            ),
-                            hintText: "Search for place",
-                            hintMaxLines: 1,
-                            errorText: searchErrorMessage.isNotEmpty
-                                ? searchErrorMessage
-                                : null,
-                            hintStyle: const TextStyle(color: Colors.grey),
-                            suffixIcon: GestureDetector(
-                              child: const Icon(Icons.search),
-                              onTap: () async {
-                                setState(() {
-                                  searchErrorMessage = '';
-                                });
-                                if (query.isNotEmpty) {
-                                  if (Common.isValidName(query)) {
-                                    await _search();
-                                  } else {
-                                    setState(() {
-                                      searchErrorMessage =
-                                          "Special characters (,./?><!@#%^&*() not allowed.Try again";
-                                    });
-                                  }
+                          }
+                        },
+                        onChanged: (String value) {
+                          setState(() {
+                            searchErrorMessage = '';
+                            query = value;
+                          });
+                        },
+                        style: const TextStyle(color: Colors.teal),
+                        decoration: InputDecoration(
+                          filled: true,
+                          focusColor: Colors.teal,
+                          fillColor: Colors.grey.shade200,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
+                          hintText: "Search for place",
+                          hintMaxLines: 1,
+                          errorText: searchErrorMessage.isNotEmpty
+                              ? searchErrorMessage
+                              : null,
+                          hintStyle: const TextStyle(color: Colors.grey),
+                          suffixIcon: GestureDetector(
+                            child: const Icon(Icons.search),
+                            onTap: () async {
+                              setState(() {
+                                searchErrorMessage = '';
+                              });
+                              if (query.isNotEmpty) {
+                                if (Common.isValidName(query)) {
+                                  await _search();
                                 } else {
                                   setState(() {
                                     searchErrorMessage =
-                                        "Place name empty , must sure you type something.Try again";
+                                        "Special characters (,./?><!@#%^&*() not allowed.Try again";
                                   });
                                 }
-                              },
+                              } else {
+                                setState(() {
+                                  searchErrorMessage =
+                                      "Place name empty , must sure you type something.Try again";
+                                });
+                              }
+                            },
+                          ),
+                          prefixIcon: query.isNotEmpty
+                              ? GestureDetector(
+                                  child: const Icon(Icons.cancel),
+                                  onTap: () async {
+                                    setState(() {
+                                      query = '';
+                                      _textEditingController.clear();
+                                    });
+                                  },
+                                )
+                              : null,
+                          prefixIconColor: kPrimaryColor,
+                        ))),
+              if (showSearchResults)
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        searchName,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: kPrimaryColor,
+                            fontSize: 16),
+                      ),
+                      Container(
+                          decoration: const BoxDecoration(
+                              color: kPrimaryColor,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(30.0))),
+                          padding: const EdgeInsets.only(top: 0, bottom: 0),
+                          child: Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 10, right: 10),
+                              child: Text(
+                                searchCount,
+                                style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                              )))
+                    ],
+                  ),
+                ),
+              if (searchItems.isNotEmpty)
+                if (!showSearchResults)
+                  if (!showSearchBar)
+                    Padding(
+                        padding: const EdgeInsets.all(5),
+                        child: Container(
+                            decoration: const BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5.0))),
+                            padding: const EdgeInsets.only(top: 5, bottom: 5),
+                            child: Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text("History",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            color: kPrimaryColor,
+                                            fontSize: 16)),
+                                    GestureDetector(
+                                      child: const Text("Clear all",
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: kPrimaryColor)),
+                                      onTap: () {
+                                        setState(() {
+                                          inProgress = true;
+                                        });
+                                        var history =
+                                            context.read<HistoryModel>();
+                                        if (history.items.isNotEmpty) {
+                                          history.deleteItems();
+                                        }
+                                        setState(() {
+                                          searchItems.clear();
+                                          inProgress = false;
+                                        });
+                                      },
+                                    )
+                                  ],
+                                )))),
+              if (searchItems.isNotEmpty)
+                for (var item in searchItems)
+                  Padding(
+                      padding: const EdgeInsets.only(
+                        bottom: 3,
+                      ),
+                      child: Container(
+                          decoration: const BoxDecoration(
+                              color: Color.fromARGB(15, 153, 153, 153),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5.0))),
+                          padding: const EdgeInsets.only(top: 0, bottom: 0),
+                          child: ListTile(
+                            leading: item.images.isNotEmpty
+                                ? Common.displayImage(
+                                    images: item.images,
+                                    imageType: 'place',
+                                    imageHeight: 60,
+                                    imageWidth: 60)
+                                : null,
+                            title: Text(
+                              item.name,
+                              style: const TextStyle(
+                                  overflow: TextOverflow.ellipsis,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500),
                             ),
-                            prefixIcon: query.isNotEmpty
+                            subtitle: Text(
+                              item.address,
+                              style: const TextStyle(
+                                  overflow: TextOverflow.ellipsis),
+                            ),
+                            trailing: !showSearchResults && !showSearchBar
                                 ? GestureDetector(
-                                    child: const Icon(Icons.cancel),
-                                    onTap: () async {
+                                    child: const Icon(
+                                      Icons.delete_outline_outlined,
+                                      color: Colors.red,
+                                    ),
+                                    onTap: () {
+                                      var history =
+                                          context.read<HistoryModel>();
+                                      history.delete(item);
                                       setState(() {
-                                        query = '';
-                                        _textEditingController.clear();
+                                        searchItems.remove(item);
                                       });
                                     },
                                   )
                                 : null,
-                            prefixIconColor: kPrimaryColor,
+                            onTap: () {
+                              var cart = context.read<CartModel>();
+                              cart.removeAll();
+                              var history = context.read<HistoryModel>();
+                              if (!history.items.contains(item)) {
+                                history.add(item);
+                                Common.log(item.id, 'place');
+                              }
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return HomeScreen(searchItem: item);
+                              }));
+                            },
                           ))),
-                if (showSearchResults)
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          searchName,
-                          style: const TextStyle(                              
-                                              fontWeight: FontWeight.w500,
-                                              color: kPrimaryColor,
-                                              fontSize: 16),
+              if (searchItems.isEmpty)
+                Center(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      SizedBox(
+                        height: size.height * 0.01,
+                      ),
+                      Container(
+                        width: size.width * 0.98,
+                        decoration: const BoxDecoration(
+                            color: kPrimaryLightColor,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10.0))),
+                        padding: const EdgeInsets.only(top: 5, bottom: 5),
+                        child: const Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Menu App",
+                                style: TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                    color: kPrimaryColor,
+                                    fontFamily: 'Quicksand'),
+                              ),
+                              Text(
+                                "Menu app for restaurants,clubs and coffee shops in and around Cape Town",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: kPrimaryColor,
+                                ),
+                              )
+                            ],
+                          ),
                         ),
-                        Container(
-                            decoration: const BoxDecoration(
-                                color: kPrimaryColor,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(30.0))),
-                            padding: const EdgeInsets.only(top: 0, bottom: 0),
-                            child: Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 10, right: 10),
-                                child: Text(
-                                  searchCount,
-                                  style: const TextStyle(
+                      ),
+                      SizedBox(
+                        height: size.height * 0.01,
+                      ),
+                      Image.asset(
+                        "assets/images/table-mountain.png",
+                        height: size.width * 0.9,
+                      ),
+                      SizedBox(
+                        height: size.height * 0.01,
+                      ),
+                      Container(
+                          width: size.width * 0.98,
+                          decoration: const BoxDecoration(
+                              color: kPrimaryColor,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10.0))),
+                          padding: const EdgeInsets.only(top: 5, bottom: 5),
+                          child: const Padding(
+                              padding: EdgeInsets.all(10),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Can't find your favorite place ?",
+                                    style: TextStyle(
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                        fontFamily: 'Quicksand'),
+                                  ),
+                                  Text(
+                                    "Let us know on our social handles so that we include it on the list of awesome places in Cape Town ",
+                                    style: TextStyle(
                                       fontSize: 14,
                                       color: Colors.white,
-                                      fontWeight: FontWeight.bold),
-                                )))
-                      ],
-                    ),
-                  ),
-                if (searchItems.isNotEmpty)
-                  if (!showSearchResults)
-                    if (!showSearchBar)
-                      Padding(
-                          padding: const EdgeInsets.all(5),
-                          child: Container(
-                              decoration: const BoxDecoration(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(5.0))),
-                              padding: const EdgeInsets.only(top: 5, bottom: 5),
-                              child: Padding(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text("History",
-                                          style: TextStyle(                                              
-                                              fontWeight: FontWeight.w500,
-                                              color: kPrimaryColor,
-                                              fontSize: 16)),
-                                      GestureDetector(
-                                        child: const Text("Clear all",
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                color: kPrimaryColor)),
-                                        onTap: () {
-                                          setState(() {
-                                            inProgress = true;
-                                          });
-                                          var history =
-                                              context.read<HistoryModel>();
-                                          if (history.items.isNotEmpty) {
-                                            history.deleteItems();
-                                          }
-                                          setState(() {
-                                            searchItems.clear();
-                                            inProgress = false;
-                                          });
-                                        },
-                                      )
-                                    ],
-                                  )))),
-                if (searchItems.isNotEmpty)
-                  for (var item in searchItems)
-                    Padding(
-                        padding: const EdgeInsets.only(
-                          bottom: 3,
-                        ),
-                        child: Container(
-                            decoration: const BoxDecoration(
-                                color: Color.fromARGB(15, 153, 153, 153),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(5.0))),
-                            padding: const EdgeInsets.only(top: 0, bottom: 0),
-                            child: ListTile(
-                              leading:item.images.isNotEmpty? Common.displayImage(
-                                  images: item.images,
-                                  imageType: 'place',
-                                  imageHeight: 60,
-                                  imageWidth: 60):null,
-                              title: Text(
-                                item.name,
-                                style: const TextStyle(
-                                    overflow: TextOverflow.ellipsis,fontSize: 16,
-                                                  fontWeight: FontWeight.w500),
-                              ),
-                              subtitle: Text(
-                                item.address,
-                                style: const TextStyle(
-                                    overflow: TextOverflow.ellipsis),
-                              ),
-                              trailing: !showSearchResults && !showSearchBar
-                                  ? GestureDetector(
-                                      child: const Icon(
-                                          Icons.delete_outline_outlined,
-                                          color: Colors.red,
-                                        ),
-                                      onTap: () {
-                                        var history =
-                                            context.read<HistoryModel>();
-                                        history.delete(item);
-                                        setState(() {
-                                          searchItems.remove(item);
-                                        });
-                                      },
-                                    )
-                                  : null,
-                              onTap: () {
-                                var cart = context.read<CartModel>();
-                                cart.removeAll();
-                                var history = context.read<HistoryModel>();
-                                if (!history.items.contains(item)) {
-                                  history.add(item);
-                                  Common.log(item.id, 'place');
-                                }
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder: (context) {
-                                  return HomeScreen(searchItem: item);
-                                }));
-                              },
-                            ))),
-                if (searchItems.isEmpty)
-                   Center(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [ SizedBox(
-                            height: size.height*0.01,
-                          ),
-                            Container(
-                                width: size.width*0.98,
-                              decoration: const BoxDecoration(
-                                color: kPrimaryLightColor,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10.0))),
-                              padding: const EdgeInsets.only(top: 5, bottom: 5),
-                              child: const Padding(padding: EdgeInsets.all(10),
-                              child:
-                               Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                              Text(
-                            "Menu App",
-                            style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                                color: kPrimaryColor,
-                                fontFamily: 'Quicksand'), 
-                              ),
-                            Text(
-                            "Menu app for restaurants,clubs and coffee shops in and around Cape Town",
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: kPrimaryColor,),
-                          )
-                              ],),
-                                        
-                             ),
-                            ),
-                              
-                          SizedBox(
-                            height: size.height*0.01,
-                          ),
-                           Image.asset(
-                              "assets/images/table-mountain.png",
-                              height: size.width*0.9,
-                            ),
-                              
-                          SizedBox(
-                            height: size.height*0.01,
-                          ),
-                              Container(
-                                width: size.width*0.98,
-                              decoration: const BoxDecoration(
-                                color: kPrimaryColor,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10.0))),
-                              padding: const EdgeInsets.only(top: 5, bottom: 5),
-                              child: const Padding(padding: EdgeInsets.all(10),
-                              child:
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                              Text(
-                            "Can't find your favorite place ?",
-                            style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                fontFamily: 'Quicksand'),                         
-
-
-                              ),
-                            Text(
-                            "Let us know on our social handles so that we include it on the list of awesome places in Cape Town ",
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.white,),
-                          )
-                              ],))),
-
-                          SizedBox(
-                            height: size.height*0.01,
-                          ),
-                        ],
+                                    ),
+                                  )
+                                ],
+                              ))),
+                      SizedBox(
+                        height: size.height * 0.01,
                       ),
-                    ),
-              ])),
-            ),bottomNavigationBar:(searchItems.isEmpty)&&
-                             (!showSearchBar)? Padding(
-                                        padding: const EdgeInsets.all(10),
-                                        child: ElevatedButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                showSearchBar = true;
-                                                showTrendingItems = false;
-                                              });
-                                            },
-                                            child:const Padding(padding: EdgeInsets.all(15)
-                                        ,child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Text("Get started",
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 18,
-                                                    color: kPrimaryColor,
-                                                    fontFamily: 'Quicksand'),),
-                                                Icon(
-                                                  Icons.search,
-                                                  color: kPrimaryColor,
-                                                ),
-                                              ],
-                                            )))):null,));
+                    ],
+                  ),
+                ),
+            ])),
+          ),
+          bottomNavigationBar: (searchItems.isEmpty) && (!showSearchBar)
+              ? Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          showSearchBar = true;
+                          showTrendingItems = false;
+                        });
+                      },
+                      child: const Padding(
+                          padding: EdgeInsets.all(15),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Get started",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    color: kPrimaryColor,
+                                    fontFamily: 'Quicksand'),
+                              ),
+                              Icon(
+                                Icons.search,
+                                color: kPrimaryColor,
+                              ),
+                            ],
+                          ))))
+              : null,
+        ));
   }
 
   getTags() async {
     try {
       List<Tag> tagList = [];
-      String token = settings.token.isNotEmpty ? settings.token : '1234567890';
+
       RequestDataModel requestModel =
-          RequestDataModel(keyword: '', id: '', token: token);
+          RequestDataModel(keyword: '', id: '', token: dotenv.get('API_KEY'));
       APIServiceList apiService = APIServiceList();
       setState(() {
         inProgress = true;
@@ -655,9 +635,8 @@ class _SearchScreenState extends State<SearchScreen> {
 
   getSettings() async {
     try {
-      String token = settings.token.isNotEmpty ? settings.token : '1234567890';
       RequestDataModel requestModel =
-          RequestDataModel(keyword: '', id: '', token: token);
+          RequestDataModel(keyword: '', id: '',token: dotenv.get('api_key'));
       APIServiceList apiService = APIServiceList();
       setState(() {
         inProgress = true;
@@ -721,9 +700,9 @@ class _SearchScreenState extends State<SearchScreen> {
         inProgress = true;
       });
       List<SearchItem> trendingPlaces = [];
-      String token = settings.token.isNotEmpty ? settings.token : '1234567890';
+
       RequestDataModel requestModel =
-          RequestDataModel(keyword: query, id: id, token: token);
+          RequestDataModel(keyword: query, id: id,token: dotenv.get('api_key'));
       APIServiceList apiService = APIServiceList();
 
       await apiService.getTrendingPlaces(requestModel).then((value) async {
@@ -788,16 +767,16 @@ class _SearchScreenState extends State<SearchScreen> {
               }
             }
             trendingPlaces.add(SearchItem(
-                place['id'],
-                place['name'],
-                place['address'],
-                categories,
-                processImages(place['image']),
-                sortString(place['description']),
-                sortString(place['phone']),
-                processAds(place['ads']),
-                processDays([]),
-                ));
+              place['id'],
+              place['name'],
+              place['address'],
+              categories,
+              processImages(place['image']),
+              sortString(place['description']),
+              sortString(place['phone']),
+              processAds(place['ads']),
+              processDays([]),
+            ));
           }
         }
       });
@@ -820,9 +799,9 @@ class _SearchScreenState extends State<SearchScreen> {
         inProgress = true;
       });
       List<SearchItem> searchItemss = [];
-      String token = settings.token.isNotEmpty ? settings.token : '1234567890';
+
       RequestDataModel requestModel =
-          RequestDataModel(keyword: query, id: id, token: token);
+          RequestDataModel(keyword: query, id: id,token: dotenv.get('api_key'));
       APIServiceList apiService = APIServiceList();
 
       await (id.isNotEmpty
@@ -890,15 +869,16 @@ class _SearchScreenState extends State<SearchScreen> {
               }
             }
             searchItemss.add(SearchItem(
-                place['id'],
-                place['name'],
-                place['address'],
-                categories,
-                processImages(place['image']),
-                sortString(place['description']),
-                sortString(place['phone']),
-                processAds(place['ads']),
-                processDays([]),));
+              place['id'],
+              place['name'],
+              place['address'],
+              categories,
+              processImages(place['image']),
+              sortString(place['description']),
+              sortString(place['phone']),
+              processAds(place['ads']),
+              processDays([]),
+            ));
           }
         }
       });
@@ -934,7 +914,7 @@ class _SearchScreenState extends State<SearchScreen> {
   List<OpenTime> processDays(var daysList) {
     List<OpenTime> days = [];
     for (var element in daysList) {
-      days.add(OpenTime(element['day'].toString(),element['time'].toString()));
+      days.add(OpenTime(element['day'].toString(), element['time'].toString()));
     }
     return days;
   }

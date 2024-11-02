@@ -9,6 +9,7 @@ import 'package:cmenu/Components/Utils/common.dart';
 import 'package:cmenu/Components/Utils/setting_preferences.dart';
 import 'package:cmenu/Single/product_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
 class SearchResultsListView extends StatefulWidget {
@@ -33,8 +34,8 @@ class _SearchResultsListViewState extends State<SearchResultsListView> {
     var size = MediaQuery.of(context).size;
     String currencyCode = "R";
     return Column(children: [
-      if(widget.categoryName.categories.isNotEmpty)
-      SubBuildTabs(categories: widget.categoryName.categories),
+      if (widget.categoryName.categories.isNotEmpty)
+        SubBuildTabs(categories: widget.categoryName.categories),
       for (var element in widget.products)
         Padding(
             padding: const EdgeInsets.only(
@@ -80,7 +81,8 @@ class _SearchResultsListViewState extends State<SearchResultsListView> {
                                               element.name,
                                               style: const TextStyle(
                                                   fontSize: 16,
-                                                  fontWeight: FontWeight.w500,overflow: TextOverflow.fade),
+                                                  fontWeight: FontWeight.w500,
+                                                  overflow: TextOverflow.fade),
                                             )),
                                         if (element.description.isNotEmpty)
                                           Padding(
@@ -96,7 +98,8 @@ class _SearchResultsListViewState extends State<SearchResultsListView> {
                                                     textAlign:
                                                         TextAlign.justify,
                                                     style: const TextStyle(
-                                                      overflow: TextOverflow.ellipsis,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
                                                         fontSize: 14),
                                                   ))),
                                         Consumer<CartModel>(
@@ -120,9 +123,8 @@ class _SearchResultsListViewState extends State<SearchResultsListView> {
 
   log(String id, String section) async {
     try {
-      String token = settings.token.isNotEmpty ? settings.token : '1234567890';
       TrackDataModel requestModel =
-          TrackDataModel(id: id, section: section, token: token);
+          TrackDataModel(id: id, section: section,token: dotenv.get('api_key'));
       APIServiceList apiService = APIServiceList();
       await apiService.track(requestModel).then((value) async {
         if (value.error) {}

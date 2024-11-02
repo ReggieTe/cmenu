@@ -2,8 +2,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cmenu/Components/Api/api.service.list.dart';
 import 'package:cmenu/Components/Class/image.dart' as local_image;
 import 'package:cmenu/Components/Class/response.dart';
-import 'package:cmenu/Components/Utils/setting_preferences.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image_fade/image_fade.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:shimmer/shimmer.dart';
@@ -17,10 +17,8 @@ class Common {
 
   static void log(String id, String section) async {
     try {
-      var settings = SettingPreferences.getSetting();
-      String token = settings.token.isNotEmpty ? settings.token : '1234567890';
       TrackDataModel requestModel =
-          TrackDataModel(id: id, section: section, token: token);
+          TrackDataModel(id: id, section: section,token: dotenv.get('api_key'));
       APIServiceList apiService = APIServiceList();
       await apiService.track(requestModel).then((value) async {
         if (value.error) {}
