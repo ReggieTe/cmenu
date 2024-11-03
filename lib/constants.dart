@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 const kPrimaryColor = Color(0xFF6F35A5);
 const kPrimaryLightColor = Color(0xFFF1E6FF);
 const double kBorderRaduis = 9;
-const String domainURL = "https://cmenu.rtembachako/api/v1/";
+const String domainURL = "http://cmenu.rtembachako.com/api/v1/";
 const String appVersion = "1.0.0";
 const String appName = "cMenu";
 const bool kDebugMode = true;

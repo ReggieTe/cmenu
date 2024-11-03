@@ -27,8 +27,8 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  final SearchController _searchController = SearchController();
-  final TextEditingController _textEditingController = TextEditingController();
+  SearchController _searchController = SearchController();
+  TextEditingController _textEditingController = TextEditingController();
   var settings = SettingPreferences.getSetting();
   final focusNode = FocusNode();
   bool showSearchBar = false;
@@ -47,10 +47,10 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   void initState() {
+    super.initState();
     getTags();
     getTrendingPlaces();
     getSettings();
-    super.initState();
   }
 
   @override
@@ -636,7 +636,7 @@ class _SearchScreenState extends State<SearchScreen> {
   getSettings() async {
     try {
       RequestDataModel requestModel =
-          RequestDataModel(keyword: '', id: '',token: dotenv.get('api_key'));
+          RequestDataModel(keyword: '', id: '', token: dotenv.get('api_key'));
       APIServiceList apiService = APIServiceList();
       setState(() {
         inProgress = true;
@@ -701,8 +701,8 @@ class _SearchScreenState extends State<SearchScreen> {
       });
       List<SearchItem> trendingPlaces = [];
 
-      RequestDataModel requestModel =
-          RequestDataModel(keyword: query, id: id,token: dotenv.get('api_key'));
+      RequestDataModel requestModel = RequestDataModel(
+          keyword: query, id: id, token: dotenv.get('api_key'));
       APIServiceList apiService = APIServiceList();
 
       await apiService.getTrendingPlaces(requestModel).then((value) async {
@@ -800,8 +800,8 @@ class _SearchScreenState extends State<SearchScreen> {
       });
       List<SearchItem> searchItemss = [];
 
-      RequestDataModel requestModel =
-          RequestDataModel(keyword: query, id: id,token: dotenv.get('api_key'));
+      RequestDataModel requestModel = RequestDataModel(
+          keyword: query, id: id, token: dotenv.get('API_KEY'));
       APIServiceList apiService = APIServiceList();
 
       await (id.isNotEmpty
@@ -892,6 +892,7 @@ class _SearchScreenState extends State<SearchScreen> {
         }
       });
     } catch (error) {
+      print(error);
       setState(() {
         inProgress = false;
       });

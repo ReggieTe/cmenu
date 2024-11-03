@@ -7,6 +7,7 @@ import 'package:cmenu/Splash/splash_screen.dart';
 import 'package:cmenu/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 
@@ -16,6 +17,7 @@ Future<void> main() async {
   await SettingPreferences.init();
   await FirstTimePreferences.init();
   await MobileAds.instance.initialize();
+  await dotenv.load(fileName: "assets/.env");
   runApp(const MyApp());
 }
 
